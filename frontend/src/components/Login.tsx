@@ -15,10 +15,11 @@ const Login = () => {
                 if(res.status === 200){
                     if(signIn({
                         auth: {
-                            token: res.data.token,
+                            token: res.data.access_token,
                             type: 'Bearer'
                         },
-                        userState: res.data.user
+                        refresh: res.data.refresh_token,
+                        userState: res.data.authUserState
                     })){ 
                         navigate('/home')
                     }else {
