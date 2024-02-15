@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'users',
+    'portfolio_management',
 ]
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
