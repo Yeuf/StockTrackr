@@ -10,7 +10,7 @@ const store = createStore<{username: string}>({
   cookieDomain: window.location.hostname,
   cookieSecure: false,
   // cookieSecure: window.location.protocol === 'https:',
-  refresh: refresh_api,
+  // refresh: refresh_api,
 })
 
 function App() {

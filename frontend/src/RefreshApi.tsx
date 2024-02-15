@@ -5,7 +5,7 @@ const refresh_api = createRefresh({
     interval: 10,
     refreshApiCallback: async (param) => {
         try {
-            const response = await axios.post("/refresh", param, {
+            const response = await axios.post('http://127.0.0.1:8000/api/token/refresh', param, {
                 headers: {'Authorization': `Bearer ${param.authToken}`}
             })
             console.log("Refreshing")

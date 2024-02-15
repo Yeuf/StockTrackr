@@ -18,7 +18,7 @@ const Login = () => {
                             token: res.data.access_token,
                             type: 'Bearer'
                         },
-                        refresh: res.data.refresh_token,
+                        // refresh: res.data.refresh_token,
                         userState: res.data.authUserState
                     })){ 
                         navigate('/home')
