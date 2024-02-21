@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Portfolio, Stock, Transaction
 
 class PortfolioSerializer(serializers.ModelSerializer):
+    # user = serializers.PrimaryKeyRelatedField(default=serializers.CurrentUserDefault(), read_only=True)
+    
     class Meta:
         model = Portfolio
         fields = '__all__'

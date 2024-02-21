@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortfolio, updatePortfolio, deletePortfolio } from '../api/portfolioApi';
 
 type Portfolio = {
-  id: number;
+  id: string;
   name: string;
 };
 
@@ -20,13 +20,13 @@ function PortfolioManagement() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getCookie('jwt_token')}`,
+          'Authorization': `Bearer ${getCookie('_auth')}`,
         },
       });
       if (!response.ok) {
         throw new Error('Failed to fetch portfolios');
       }
-      const data = await response.json();
+      const data: Portfolio[] = await response.json(); // Ensure data is typed as Portfolio[]
       setPortfolios(data);
     } catch (error) {
       console.error('Error fetching portfolios:', error);
@@ -35,8 +35,8 @@ function PortfolioManagement() {
 
   const handleCreatePortfolio = async () => {
     try {
-      const newPortfolio: Portfolio = { id: 0, name: newPortfolioName };
-      const token: string = getCookie('jwt_token');
+      const newPortfolio: Omit<Portfolio, 'id'> = { name: newPortfolioName };
+      const token: string = getCookie('_auth');
       const data = await createPortfolio(newPortfolio, token);
       setPortfolios([...portfolios, data]);
       setNewPortfolioName('');
@@ -45,10 +45,10 @@ function PortfolioManagement() {
     }
   };
 
-  const handleUpdatePortfolio = async (portfolioId: number, newName: string) => {
+  const handleUpdatePortfolio = async (portfolioId: string, newName: string) => {
     try {
-      const token: string = getCookie('jwt_token');
-      await updatePortfolio(portfolioId, { name: newName }, token);
+      const token: string = getCookie('_auth');
+      await updatePortfolio(portfolioId, { id: portfolioId, name: newName }, token);
       const updatedPortfolios = portfolios.map(portfolio =>
         portfolio.id === portfolioId ? { ...portfolio, name: newName } : portfolio
       );
@@ -58,9 +58,9 @@ function PortfolioManagement() {
     }
   };
 
-  const handleDeletePortfolio = async (portfolioId: number) => {
+  const handleDeletePortfolio = async (portfolioId: string) => {
     try {
-      const token: string = getCookie('jwt_token');
+      const token: string = getCookie('_auth');
       await deletePortfolio(portfolioId, token);
       const updatedPortfolios = portfolios.filter(portfolio => portfolio.id !== portfolioId);
       setPortfolios(updatedPortfolios);

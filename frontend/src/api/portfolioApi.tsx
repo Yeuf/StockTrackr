@@ -1,10 +1,11 @@
-const API_BASE_URL = 'http://127.0.0.1:8000/api/portfolio/';
+const API_BASE_URL = 'http://127.0.0.1:8000/api/portfolio';
 
 type PortfolioData = {
+  id: string;
   name: string;
 };
 
-export const createPortfolio = async (portfolioData: PortfolioData, token: string) => {
+export const createPortfolio = async (portfolioData: Omit<PortfolioData, 'id'>, token: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/portfolios/`, {
       method: 'POST',
@@ -22,7 +23,7 @@ export const createPortfolio = async (portfolioData: PortfolioData, token: strin
   }
 };
 
-export const updatePortfolio = async (portfolioId: number, portfolioData: PortfolioData, token: string) => {
+export const updatePortfolio = async (portfolioId: string, portfolioData: PortfolioData, token: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/`, {
       method: 'PUT',
@@ -40,7 +41,7 @@ export const updatePortfolio = async (portfolioId: number, portfolioData: Portfo
   }
 };
 
-export const deletePortfolio = async (portfolioId: number, token: string) => {
+export const deletePortfolio = async (portfolioId: string, token: string) => {
   try {
     const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/`, {
       method: 'DELETE',
