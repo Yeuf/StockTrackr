@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Portfolio, Stock, Transaction
+from .models import Portfolio, Investment
 from rest_framework import exceptions
 import uuid
 
@@ -19,12 +19,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
         else:
             raise exceptions.PermissionDenied("User must be authenticated to create a portfolio.")
 
-class StockSerializer(serializers.ModelSerializer):
+class InvestmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Stock
-        fields = '__all__'
-
-class TransactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transaction
+        model = Investment
         fields = '__all__'

@@ -9,6 +9,8 @@ type Portfolio = {
 function PortfolioManagement() {
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [newPortfolioName, setNewPortfolioName] = useState<string>('');
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
+  const [updatePortfolioName, setUpdatePortfolioName] = useState<string>('');
 
   useEffect(() => {
     fetchPortfolios();
@@ -45,17 +47,32 @@ function PortfolioManagement() {
     }
   };
 
-  const handleUpdatePortfolio = async (portfolioId: string, newName: string) => {
+  const handleUpdateButtonClick = (portfolioId: string) => {
+    setSelectedPortfolioId(portfolioId);
+    setUpdatePortfolioName('');
+  };
+
+  const handleUpdatePortfolio = async () => {
     try {
-      const token: string = getCookie('_auth');
-      await updatePortfolio(portfolioId, { name: newName }, token);
-      const updatedPortfolios = portfolios.map(portfolio =>
-        portfolio.id === portfolioId ? { ...portfolio, name: newName } : portfolio
-      );
-      setPortfolios(updatedPortfolios);
+      if (selectedPortfolioId && updatePortfolioName.trim() !== '') {
+        const token: string = getCookie('_auth');
+        await updatePortfolio(selectedPortfolioId, { name: updatePortfolioName }, token);
+        const updatedPortfolios = portfolios.map(portfolio =>
+          portfolio.id === selectedPortfolioId ? { ...portfolio, name: updatePortfolioName } : portfolio
+        );
+        setPortfolios(updatedPortfolios);
+        setSelectedPortfolioId(null);
+      } else {
+        console.error('Error: Update name cannot be blank.');
+      }
     } catch (error) {
       console.error('Error updating portfolio name:', error);
     }
+  };
+  
+  const handleCancelUpdate = () => {
+    setSelectedPortfolioId(null);
+    setUpdatePortfolioName('');
   };
 
   const handleDeletePortfolio = async (portfolioId: string) => {
@@ -80,8 +97,22 @@ function PortfolioManagement() {
       <ul>
         {portfolios.map(portfolio => (
           <li key={portfolio.id}>
-            {portfolio.name}
-            <button onClick={() => handleUpdatePortfolio(portfolio.id, `${portfolio.name}-Updated`)}>Update</button>
+            <span>{portfolio.name}</span>
+            {selectedPortfolioId === portfolio.id && (
+              <div>
+                <input
+                  type="text"
+                  value={updatePortfolioName}
+                  onChange={(e) => setUpdatePortfolioName(e.target.value)}
+                  placeholder="Enter new name"
+                />
+                <button onClick={handleUpdatePortfolio}>Confirm Update</button>
+                <button onClick={handleCancelUpdate}>Cancel</button>
+              </div>
+            )}
+            {!selectedPortfolioId && (
+              <button onClick={() => handleUpdateButtonClick(portfolio.id)}>Update</button>
+            )}
             <button onClick={() => handleDeletePortfolio(portfolio.id)}>Delete</button>
           </li>
         ))}

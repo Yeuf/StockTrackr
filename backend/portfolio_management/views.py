@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import Portfolio, Stock, Transaction
-from .serializers import PortfolioSerializer, StockSerializer, TransactionSerializer
+from .models import Portfolio, Investment
+from .serializers import PortfolioSerializer, InvestmentSerializer
 
 @permission_classes([IsAuthenticated])
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -11,11 +11,6 @@ class PortfolioViewSet(viewsets.ModelViewSet):
 
 
 @permission_classes([IsAuthenticated])
-class StockViewSet(viewsets.ModelViewSet):
-    queryset = Stock.objects.all()
-    serializer_class = StockSerializer
-
-@permission_classes([IsAuthenticated])
-class TransactionViewSet(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
+class InvestmentViewSet(viewsets.ModelViewSet):
+    queryset = Investment.objects.all()
+    serializer_class = InvestmentSerializer
