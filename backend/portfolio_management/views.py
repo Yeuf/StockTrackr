@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Portfolio, Stock, Transaction
 from .serializers import PortfolioSerializer, StockSerializer, TransactionSerializer
 
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer

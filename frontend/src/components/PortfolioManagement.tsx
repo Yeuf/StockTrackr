@@ -48,13 +48,13 @@ function PortfolioManagement() {
   const handleUpdatePortfolio = async (portfolioId: string, newName: string) => {
     try {
       const token: string = getCookie('_auth');
-      await updatePortfolio(portfolioId, { id: portfolioId, name: newName }, token);
+      await updatePortfolio(portfolioId, { name: newName }, token);
       const updatedPortfolios = portfolios.map(portfolio =>
         portfolio.id === portfolioId ? { ...portfolio, name: newName } : portfolio
       );
       setPortfolios(updatedPortfolios);
     } catch (error) {
-      console.error(`Error updating portfolio ${portfolioId}:`, error);
+      console.error('Error updating portfolio name:', error);
     }
   };
 

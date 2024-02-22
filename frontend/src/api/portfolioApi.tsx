@@ -11,7 +11,7 @@ export const createPortfolio = async (portfolioData: Omit<PortfolioData, 'id'>, 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `JWT ${token}`,
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(portfolioData),
     });
@@ -23,20 +23,20 @@ export const createPortfolio = async (portfolioData: Omit<PortfolioData, 'id'>, 
   }
 };
 
-export const updatePortfolio = async (portfolioId: string, portfolioData: PortfolioData, token: string) => {
+export const updatePortfolio = async (id: string, updatedFields: Partial<PortfolioData>, token: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/`, {
+    const response = await fetch(`${API_BASE_URL}/portfolios/${id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `JWT ${token}`,
+        'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(portfolioData),
+      body: JSON.stringify(updatedFields),
     });
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error(`Error updating portfolio ${portfolioId}:`, error);
+    console.error('Error updating portfolio:', error);
     throw error;
   }
 };
@@ -46,7 +46,7 @@ export const deletePortfolio = async (portfolioId: string, token: string) => {
     const response = await fetch(`${API_BASE_URL}/portfolios/${portfolioId}/`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `JWT ${token}`,
+        'Authorization': `Bearer ${token}`,
       },
     });
     if (!response.ok) {
