@@ -8,6 +8,7 @@ class Portfolio(models.Model):
     name = models.CharField(max_length=100)
 
 class Investment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
     symbol = models.CharField(max_length=10)
     quantity = models.IntegerField()

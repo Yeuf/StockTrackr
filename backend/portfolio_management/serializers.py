@@ -23,3 +23,4 @@ class InvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment
         fields = '__all__'
+        extra_kwargs = {'id': {'read_only': True}}
