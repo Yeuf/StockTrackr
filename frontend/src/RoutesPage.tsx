@@ -5,6 +5,7 @@ import RequireAuth from '@auth-kit/react-router/RequireAuth'
 import Home from './components/Home'
 import Login from './components/Login'
 import PortfolioManagement from './components/PortfolioManagement'
+import PortfolioDashboard from './components/PortfolioDashboard'
 
 const RoutesPage = () => {
   return (
@@ -20,6 +21,11 @@ const RoutesPage = () => {
           <Route path={'/portfolio'} element={
             <RequireAuth fallbackPath={'/login'}>
               <PortfolioManagement/>
+            </RequireAuth>
+          }/>
+          <Route path={'/portfolio/:id'} element={
+            <RequireAuth fallbackPath={'/login'}>
+              <PortfolioDashboard/>
             </RequireAuth>
           }/>
         </Routes>

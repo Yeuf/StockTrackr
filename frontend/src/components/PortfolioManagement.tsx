@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { createPortfolio, updatePortfolio, deletePortfolio } from '../api/portfolioApi';
 
 type Portfolio = {
@@ -37,6 +38,11 @@ function PortfolioManagement() {
 
   const handleCreatePortfolio = async () => {
     try {
+      if (newPortfolioName.trim() === '') {
+        console.error('Error: Portfolio name cannot be blank.');
+        alert('Portfolio name cannot be blank. Please enter a valid name.');
+        return;
+      }
       const newPortfolio: Omit<Portfolio, 'id'> = { name: newPortfolioName };
       const token: string = getCookie('_auth');
       const data = await createPortfolio(newPortfolio, token);
@@ -54,6 +60,11 @@ function PortfolioManagement() {
 
   const handleUpdatePortfolio = async () => {
     try {
+      if (selectedPortfolioId && updatePortfolioName.trim() === '') {
+        console.error('Error: Update name cannot be blank.');
+        alert('Update name cannot be blank. Please enter a valid name.');
+        return;
+      }
       if (selectedPortfolioId && updatePortfolioName.trim() !== '') {
         const token: string = getCookie('_auth');
         await updatePortfolio(selectedPortfolioId, { name: updatePortfolioName }, token);
@@ -93,39 +104,57 @@ function PortfolioManagement() {
 
   return (
     <div>
-      <h2>Portfolios</h2>
-      <ul>
+      <h2 className="text-2xl font-bold mb-4">Portfolios</h2>
+      <ul className="divide-y divide-gray-200">
         {portfolios.map(portfolio => (
-          <li key={portfolio.id}>
-            <span>{portfolio.name}</span>
-            {selectedPortfolioId === portfolio.id && (
-              <div>
-                <input
-                  type="text"
-                  value={updatePortfolioName}
-                  onChange={(e) => setUpdatePortfolioName(e.target.value)}
-                  placeholder="Enter new name"
-                />
-                <button onClick={handleUpdatePortfolio}>Confirm Update</button>
-                <button onClick={handleCancelUpdate}>Cancel</button>
-              </div>
-            )}
-            {!selectedPortfolioId && (
-              <button onClick={() => handleUpdateButtonClick(portfolio.id)}>Update</button>
-            )}
-            <button onClick={() => handleDeletePortfolio(portfolio.id)}>Delete</button>
+          <li key={portfolio.id} className="py-4">
+            <div className="flex items-center justify-between">
+              <Link to={`/portfolio/${portfolio.id}`} className="font-semibold">{portfolio.name}</Link>
+              {selectedPortfolioId === portfolio.id ? (
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    value={updatePortfolioName}
+                    onChange={(e) => setUpdatePortfolioName(e.target.value)}
+                    placeholder="Enter new name"
+                    className="px-2 py-1 border border-gray-300 rounded-md mr-2"
+                  />
+                  <button onClick={handleUpdatePortfolio} className="px-3 py-1 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                    Confirm
+                  </button>
+                  <button onClick={handleCancelUpdate} className="px-3 py-1 bg-gray-600 text-white font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <button onClick={() => handleUpdateButtonClick(portfolio.id)} className="px-2 py-1 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Update
+                  </button>
+                  <button onClick={() => handleDeletePortfolio(portfolio.id)} className="px-2 py-1 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ml-2">
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </li>
         ))}
       </ul>
-      <input
-        type="text"
-        value={newPortfolioName}
-        onChange={(e) => setNewPortfolioName(e.target.value)}
-        placeholder="Enter portfolio name"
-      />
-      <button onClick={handleCreatePortfolio}>Create Portfolio</button>
+      <div className="mt-4">
+        <input
+          type="text"
+          value={newPortfolioName}
+          onChange={(e) => setNewPortfolioName(e.target.value)}
+          placeholder="Enter portfolio name"
+          className="px-2 py-1 border border-gray-300 rounded-md mr-2"
+        />
+        <button onClick={handleCreatePortfolio} className="px-3 py-1 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          Create
+        </button>
+      </div>
     </div>
   );
 }
+
 
 export default PortfolioManagement;

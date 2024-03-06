@@ -8,10 +8,14 @@ class Portfolio(models.Model):
     name = models.CharField(max_length=100)
 
 class Investment(models.Model):
+    TRANSACTION_CHOICES = (
+        ('Buy', 'Buy'),
+        ('Sell', 'Sell'),
+    )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
     symbol = models.CharField(max_length=10)
     quantity = models.IntegerField()
-    transaction_type = models.CharField(max_length=4)  # 'BUY' or 'SELL'
+    transaction_type = models.CharField(max_length=4, choices=TRANSACTION_CHOICES)
     date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
