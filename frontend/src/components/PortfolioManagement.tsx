@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPortfolio, updatePortfolio, deletePortfolio } from '../api/portfolioApi';
+import { getCookie } from '../utils/getCookie';
 
 type Portfolio = {
   id: string;
@@ -29,7 +30,7 @@ function PortfolioManagement() {
       if (!response.ok) {
         throw new Error('Failed to fetch portfolios');
       }
-      const data: Portfolio[] = await response.json(); // Ensure data is typed as Portfolio[]
+      const data: Portfolio[] = await response.json();
       setPortfolios(data);
     } catch (error) {
       console.error('Error fetching portfolios:', error);
@@ -95,11 +96,6 @@ function PortfolioManagement() {
     } catch (error) {
       console.error(`Error deleting portfolio ${portfolioId}:`, error);
     }
-  };
-
-  const getCookie = (name: string): string => {
-    const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-    return cookieValue ? cookieValue.pop()! : '';
   };
 
   return (

@@ -20,7 +20,9 @@ class PortfolioSerializer(serializers.ModelSerializer):
             raise exceptions.PermissionDenied("User must be authenticated to create a portfolio.")
 
 class InvestmentSerializer(serializers.ModelSerializer):
+    portfolio_name = serializers.CharField(source='portfolio.name', read_only=True)
+
     class Meta:
         model = Investment
         fields = '__all__'
-        extra_kwargs = {'id': {'read_only': True}}
+        extra_kwargs = {'id': {'read_only': True}, 'portfolio': {'write_only': True}}

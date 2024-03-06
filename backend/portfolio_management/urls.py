@@ -6,4 +6,7 @@ router = DefaultRouter()
 router.register(r'portfolios', PortfolioViewSet)
 router.register(r'investments', InvestmentViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),
+    path('investments/<uuid:pk>/investments_by_portfolio/', InvestmentViewSet.as_view({'get': 'investments_by_portfolio'}), name='investments-by-portfolio'),
+]
