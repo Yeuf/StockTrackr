@@ -6,6 +6,8 @@ import InvestmentForm from './InvestmentForm';
 type Investment = {
   id: string;
   portfolio_name: string;
+  current_price: number;
+  price_difference_percentage: number;
   portfolio: string;
   symbol: string;
   quantity: number;
@@ -52,7 +54,7 @@ function PortfolioDashboard() {
   };
 
   const handleDetailsClick = (symbol: string) => {
-    setSelectedSymbol(symbol);
+    setSelectedSymbol(prevSymbol => (prevSymbol === symbol ? null : symbol));
   };
 
   const aggregatedInvestments = investments.reduce((acc: any, investment: Investment) => {
@@ -60,15 +62,18 @@ function PortfolioDashboard() {
       acc[investment.symbol] = {
         quantity: 0,
         price: 0,
+        avgweighteddiff: 0,
       };
     }
     if (investment.transaction_type === 'Buy') {
       acc[investment.symbol].quantity += investment.quantity;
-      acc[investment.symbol].price += investment.quantity * investment.price;
+      acc[investment.symbol].avgweighteddiff += investment.price_difference_percentage * investment.quantity;
     } else {
       acc[investment.symbol].quantity -= investment.quantity;
-      acc[investment.symbol].price -= investment.quantity * investment.price;
     }
+    acc[investment.symbol].price = acc[investment.symbol].quantity * investment.current_price;
+    // to refine 
+    acc[investment.symbol].price_avgweighteddiff = acc[investment.symbol].avgweighteddiff / acc[investment.symbol].quantity;
     return acc;
   }, {});
 
@@ -97,7 +102,8 @@ function PortfolioDashboard() {
           <tr>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Symbol</th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Quantity</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Current Total Price</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Price diff</th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
           </tr>
         </thead>
@@ -109,6 +115,7 @@ function PortfolioDashboard() {
                 <td className="px-6 py-4 whitespace-nowrap text-center">{symbol}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedInvestments[symbol].quantity}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedInvestments[symbol].price}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedInvestments[symbol].price_avgweighteddiff}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <button onClick={() => handleDetailsClick(symbol)} className="text-indigo-600 hover:underline focus:outline-none">Details</button>
                 </td>
@@ -124,6 +131,8 @@ function PortfolioDashboard() {
                           <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                           <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                           <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                          <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</th>
+                          <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Price Diff</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
@@ -136,6 +145,8 @@ function PortfolioDashboard() {
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.date}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.quantity}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.price}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-center">{investment.current_price}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-center">{investment.price_difference_percentage} %</td>
                             </tr>
                           ))}
                       </tbody>

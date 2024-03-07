@@ -24,14 +24,15 @@ class Investment(models.Model):
     price_difference_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
 
     def calculate_price_difference_percentage(self):
-        if self.price and self.current_price:
+        if self.transaction_type == 'Buy' and self.price and self.current_price:
             price_float = float(self.price)
             return ((float(self.current_price) - price_float) / price_float) * 100
+        # elif self.transaction_type == 'Sell' and self.price and self.current_price:
+        #     price_float = float(self.price)
+        #     return ((price_float - float(self.current_price)) / price_float) * 100
         return None
 
     def save(self, *args, **kwargs):
-        self.price_difference_percentage = self.calculate_price_difference_percentage()
-
         if self.current_price is None:
             current_price_obj = CurrentPrice.objects.filter(symbol=self.symbol).first()
             if current_price_obj:
@@ -40,6 +41,7 @@ class Investment(models.Model):
                 self.current_price = get_current_price(self.symbol)
                 if self.current_price:
                     CurrentPrice.objects.update_or_create(symbol=self.symbol, defaults={'price': self.current_price})
+        self.price_difference_percentage = self.calculate_price_difference_percentage()
         super().save(*args, **kwargs)
 
 class CurrentPrice(models.Model):
