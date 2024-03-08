@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, {  useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPortfolio, updatePortfolio, deletePortfolio } from '../api/portfolioApi';
 import { getCookie } from '../utils/getCookie';
@@ -100,43 +100,58 @@ function PortfolioManagement() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Portfolios</h2>
+      <h2 className="text-2xl font-bold mb-4 flex items-center justify-center">Portfolios</h2>
       <ul className="divide-y divide-gray-200">
-        {portfolios.map(portfolio => (
-          <li key={portfolio.id} className="py-4">
-            <div className="flex items-center justify-between">
-              <Link to={`/portfolio/${portfolio.id}`} className="font-semibold">{portfolio.name}</Link>
-              {selectedPortfolioId === portfolio.id ? (
-                <div className="flex items-center">
-                  <input
-                    type="text"
-                    value={updatePortfolioName}
-                    onChange={(e) => setUpdatePortfolioName(e.target.value)}
-                    placeholder="Enter new name"
-                    className="px-2 py-1 border border-gray-300 rounded-md mr-2"
-                  />
-                  <button onClick={handleUpdatePortfolio} className="px-3 py-1 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                    Confirm
-                  </button>
-                  <button onClick={handleCancelUpdate} className="px-3 py-1 bg-gray-600 text-white font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <button onClick={() => handleUpdateButtonClick(portfolio.id)} className="px-2 py-1 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                    Update
-                  </button>
-                  <button onClick={() => handleDeletePortfolio(portfolio.id)} className="px-2 py-1 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ml-2">
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-4">
+  {portfolios.map((portfolio, index) => (
+    <React.Fragment key={portfolio.id}>
+      {index === 0 && (
+        <li className="py-4">
+          <div className="flex items-center justify-between font-bold">
+            <div className="w-1/4 text-center">Portfolio Name</div>
+            <div className="w-1/2 flex justify-center">Actions</div>
+          </div>
+        </li>
+      )}
+      <li className="py-4">
+        <div className="flex items-center justify-between">
+          <div className="w-1/4 text-center">
+            <Link to={`/portfolio/${portfolio.id}`} className="font-semibold">{portfolio.name}</Link>
+          </div>
+          <div className="w-1/2 flex justify-center">
+            {selectedPortfolioId === portfolio.id ? (
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  value={updatePortfolioName}
+                  onChange={(e) => setUpdatePortfolioName(e.target.value)}
+                  placeholder="Enter new name"
+                  className="px-2 py-1 border border-gray-300 rounded-md mr-2"
+                />
+                <button onClick={handleUpdatePortfolio} className="px-3 py-1 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                  Confirm
+                </button>
+                <button onClick={handleCancelUpdate} className="px-3 py-1 bg-gray-600 text-white font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div>
+                <button onClick={() => handleUpdateButtonClick(portfolio.id)} className="px-2 py-1 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                  Update
+                </button>
+                <button onClick={() => handleDeletePortfolio(portfolio.id)} className="px-2 py-1 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ml-2">
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </li>
+    </React.Fragment>
+  ))}
+</ul>
+
+      <div className="mt-4 flex items-center justify-center">
         <input
           type="text"
           value={newPortfolioName}

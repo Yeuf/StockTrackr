@@ -12,5 +12,11 @@ class Command(BaseCommand):
             if current_price is not None:
                 CurrentPrice.objects.update_or_create(symbol=symbol, defaults={'price': current_price})
                 self.stdout.write(self.style.SUCCESS(f"Updated price for {symbol}"))
+                
+                investments = Investment.objects.filter(symbol=symbol)
+                for investment in investments:
+                    investment.current_price = current_price
+                    investment.save()
+                    
             else:
                 self.stdout.write(self.style.WARNING(f"Failed to update price for {symbol}"))

@@ -90,9 +90,11 @@ function PortfolioDashboard() {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded-md shadow-md">
             <InvestmentForm onCreateSuccess={() => { fetchInvestments(); closeForm(); }} />
-            <button onClick={closeForm} className="mt-4 px-3 py-1 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-              Close
-            </button>
+            <div className="mt-6 flex justify-center">
+              <button onClick={closeForm} className="px-3 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -9,10 +9,9 @@ type NavigationItem = {
 };
 
 const navigation: NavigationItem[] = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
+  { name: 'Dashboard', href: '/home', current: true },
+  { name: 'Portfolios', href: '/portfolio', current: false },
   { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
 ];
 
 function classNames(...classes: (string | boolean)[]) {
