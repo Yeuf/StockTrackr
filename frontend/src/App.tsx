@@ -1,8 +1,11 @@
 import './App.css'
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import RoutesPage from './RoutesPage'
 import AuthProvider from 'react-auth-kit'
 import createStore from 'react-auth-kit/createStore';
 import refresh_api from './RefreshApi'
+import Layout from './components/Layout'
 
 const store = createStore<{username: string}>({
   authName:'_auth',
@@ -17,7 +20,9 @@ function App() {
   return (
     <>
       <AuthProvider store={store}>
-        <RoutesPage/>
+        <Layout>
+          <RoutesPage/>
+        </Layout>
       </AuthProvider>
     </>
   )

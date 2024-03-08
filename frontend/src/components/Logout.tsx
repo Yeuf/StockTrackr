@@ -1,19 +1,23 @@
 import useSignOut from 'react-auth-kit/hooks/useSignOut';
-import { useNavigate } from "react-router-dom";
-
 
 const SignOutComponent = () => {
     const signOut = useSignOut();
-    const navigate = useNavigate();
 
     const handleSignOut = () => {
         signOut();
-        navigate("/login");
+        window.location.reload();
     };
 
     return (
-        <button onClick={handleSignOut}>Sign Out</button>
+        <button
+            type="button"
+            className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+            onClick={handleSignOut}
+        >
+            <span className="sr-only">Sign out</span>
+            Sign out
+        </button>
     );
 };
 
-export default SignOutComponent
+export default SignOutComponent;
