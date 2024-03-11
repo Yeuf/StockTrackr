@@ -11,16 +11,49 @@ class Portfolio(models.Model):
     current_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def update_performance(self):
-        investments = self.investment_set.all()
-        total_investment_value = sum(investment.quantity * investment.price for investment in investments)
+        holdings = self.holding_set.all()
+        total_investment_value = sum(holding.quantity * holding.purchase_price for holding in holdings)
         if total_investment_value == 0:
             return
 
-        total_performance = sum(investment.quantity * investment.current_price for investment in investments)
+        total_performance = sum(holding.quantity * holding.current_price for holding in holdings)
         percentage_difference = ((total_performance - total_investment_value) / total_investment_value) * 100
-        self.current_value = total_performance
         self.performance = percentage_difference
         self.save()
+
+class Holding(models.Model):
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+    symbol = models.CharField(max_length=10)
+    quantity = models.IntegerField()
+    purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
+    purchase_date = models.DateField()
+    current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    performance = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+
+    def update_quantity(self, quantity):
+            self.quantity += quantity
+            if self.quantity <= 0:
+                self.delete()
+            else:
+                self.save()
+
+    def calculate_price_difference_percentage(self):
+        if self.purchase_price and self.current_price:
+            price_float = float(self.purchase_price)
+            return ((float(self.current_price) - price_float) / price_float) * 100
+        return None
+
+    def save(self, *args, **kwargs):
+        if self.current_price is None:
+            current_price_obj = CurrentPrice.objects.filter(symbol=self.symbol).first()
+            if current_price_obj:
+                self.current_price = current_price_obj.price
+            else:
+                self.current_price = get_current_price(self.symbol)
+                if self.current_price:
+                    CurrentPrice.objects.update_or_create(symbol=self.symbol, defaults={'price': self.current_price})
+        self.performance = self.calculate_price_difference_percentage()
+        super().save(*args, **kwargs)
 
 class Investment(models.Model):
     TRANSACTION_CHOICES = (
@@ -34,29 +67,35 @@ class Investment(models.Model):
     transaction_type = models.CharField(max_length=4, choices=TRANSACTION_CHOICES)
     date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    price_difference_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-
-    def calculate_price_difference_percentage(self):
-        if self.transaction_type == 'Buy' and self.price and self.current_price:
-            price_float = float(self.price)
-            return ((float(self.current_price) - price_float) / price_float) * 100
-        # elif self.transaction_type == 'Sell' and self.price and self.current_price:
-        #     price_float = float(self.price)
-        #     return ((price_float - float(self.current_price)) / price_float) * 100
-        # return None
 
     def save(self, *args, **kwargs):
-        if self.current_price is None:
-            current_price_obj = CurrentPrice.objects.filter(symbol=self.symbol).first()
-            if current_price_obj:
-                self.current_price = current_price_obj.price
-            else:
-                self.current_price = get_current_price(self.symbol)
-                if self.current_price:
-                    CurrentPrice.objects.update_or_create(symbol=self.symbol, defaults={'price': self.current_price})
-        self.price_difference_percentage = self.calculate_price_difference_percentage()
         super().save(*args, **kwargs)
+        if self.transaction_type == 'Buy':
+            holding, created = Holding.objects.get_or_create(portfolio=self.portfolio, symbol=self.symbol, 
+                                                              purchase_price=self.price, 
+                                                              purchase_date=self.date, defaults={'quantity': self.quantity})
+            if not created:
+                holding.update_quantity(self.quantity)
+            else:
+                holding.quantity = self.quantity
+                holding.save()
+            if holding.quantity <= 0:
+                holding.delete()
+
+        if self.transaction_type == 'Sell':
+            holdings = Holding.objects.filter(portfolio=self.portfolio, symbol=self.symbol).order_by('purchase_date')
+            quantity_to_sell = self.quantity
+            for holding in holdings:
+                if quantity_to_sell <= 0:
+                    break
+                if holding.quantity >= quantity_to_sell:
+                    holding.quantity -= quantity_to_sell
+                    holding.save()
+                    quantity_to_sell = 0
+                else:
+                    quantity_to_sell -= holding.quantity
+                    holding.delete()
+        
         self.portfolio.update_performance()
 
 class CurrentPrice(models.Model):
