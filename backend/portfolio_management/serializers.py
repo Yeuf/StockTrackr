@@ -7,7 +7,6 @@ class HoldingSerializer(serializers.ModelSerializer):
         fields = ['symbol', 'quantity', 'purchase_price', 'purchase_date', 'current_price', 'performance']
 
 class PortfolioSerializer(serializers.ModelSerializer):
-    holdings = HoldingSerializer(many=True, read_only=True)
 
     class Meta:
         model = Portfolio

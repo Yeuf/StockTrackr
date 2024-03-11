@@ -18,6 +18,7 @@ class Portfolio(models.Model):
 
         total_performance = sum(holding.quantity * holding.current_price for holding in holdings)
         percentage_difference = ((total_performance - total_investment_value) / total_investment_value) * 100
+        self.current_value = total_performance
         self.performance = percentage_difference
         self.save()
 

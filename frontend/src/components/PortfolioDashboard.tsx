@@ -28,7 +28,7 @@ function PortfolioDashboard() {
 
   const fetchInvestments = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/portfolio/investments/${id}/investments_by_portfolio/`, {
+      const response = await fetch(`http://localhost:8000/api/portfolio/investments/${id}/holdings_by_portfolio/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
