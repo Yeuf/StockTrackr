@@ -1,7 +1,16 @@
 from django.db import models
 from users.models import CustomUser
-from portfolio_management.utils import get_current_price
+from .utils import get_current_price
 import uuid
+
+
+def get_current_price_for_symbol(symbol):
+    current_price_obj = CurrentPrice.objects.filter(symbol=symbol).first()
+    if current_price_obj:
+        return current_price_obj.price
+    else:
+        return get_current_price(symbol)
+
 
 class Portfolio(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -22,6 +31,7 @@ class Portfolio(models.Model):
         self.performance = percentage_difference
         self.save()
 
+
 class Holding(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
     symbol = models.CharField(max_length=10)
@@ -31,12 +41,46 @@ class Holding(models.Model):
     current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     performance = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
 
-    def update_quantity(self, quantity):
-            self.quantity += quantity
-            if self.quantity <= 0:
-                self.delete()
+    @classmethod
+    def update_quantity(cls, portfolio, symbol, quantity_change, purchase_price=None, purchase_date=None):
+        if quantity_change > 0:
+            # Buying transaction: Update or create holding
+            holding, created = cls.objects.get_or_create(
+                portfolio=portfolio,
+                symbol=symbol,
+                purchase_price=purchase_price,
+                purchase_date=purchase_date,
+                defaults={'quantity': quantity_change}
+            )
+            if not created:
+                holding.quantity += quantity_change
+                holding.save()
+        else:
+            # Selling transaction: Handle quantity update
+            holdings = cls.objects.filter(portfolio=portfolio, symbol=symbol).order_by('purchase_date')
+            total_holding_quantity = sum(holding.quantity for holding in holdings)
+            if total_holding_quantity >= abs(quantity_change):
+                # Sufficient quantity available in holdings for selling
+                quantity_remaining = -quantity_change
+                for holding in holdings:
+                    if quantity_remaining <= 0:
+                        break
+                    if holding.quantity >= quantity_remaining:
+                        holding.quantity -= quantity_remaining
+                        if holding.quantity == 0:
+                            holding.delete()
+                        else:
+                            holding.save()
+                        quantity_remaining = 0
+                    else:
+                        quantity_remaining -= holding.quantity
+                        holding.delete()
+                if quantity_remaining > 0:
+                    # If there is remaining quantity, create or update other holdings
+                    cls.objects.create(portfolio=portfolio, symbol=symbol, quantity=quantity_remaining)
             else:
-                self.save()
+                # Insufficient quantity available in holdings for selling
+                raise ValueError("Insufficient quantity available in holdings for selling")
 
     def calculate_price_difference_percentage(self):
         if self.purchase_price and self.current_price:
@@ -46,15 +90,10 @@ class Holding(models.Model):
 
     def save(self, *args, **kwargs):
         if self.current_price is None:
-            current_price_obj = CurrentPrice.objects.filter(symbol=self.symbol).first()
-            if current_price_obj:
-                self.current_price = current_price_obj.price
-            else:
-                self.current_price = get_current_price(self.symbol)
-                if self.current_price:
-                    CurrentPrice.objects.update_or_create(symbol=self.symbol, defaults={'price': self.current_price})
+            self.current_price = get_current_price_for_symbol(self.symbol)
         self.performance = self.calculate_price_difference_percentage()
         super().save(*args, **kwargs)
+
 
 class Investment(models.Model):
     TRANSACTION_CHOICES = (
@@ -71,43 +110,19 @@ class Investment(models.Model):
     current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.transaction_type == 'Buy':
-            holding, created = Holding.objects.get_or_create(portfolio=self.portfolio, symbol=self.symbol, 
-                                                              purchase_price=self.price, 
-                                                              purchase_date=self.date, defaults={'quantity': self.quantity})
-            if not created:
-                holding.update_quantity(self.quantity)
-            else:
-                holding.quantity = self.quantity
-                holding.save()
-            if holding.quantity <= 0:
-                holding.delete()
 
-        if self.transaction_type == 'Sell':
-            holdings = Holding.objects.filter(portfolio=self.portfolio, symbol=self.symbol).order_by('purchase_date')
-            quantity_to_sell = self.quantity
-            for holding in holdings:
-                if quantity_to_sell <= 0:
-                    break
-                if holding.quantity >= quantity_to_sell:
-                    holding.quantity -= quantity_to_sell
-                    holding.save()
-                    quantity_to_sell = 0
-                else:
-                    quantity_to_sell -= holding.quantity
-                    holding.delete()
-        
         if self.current_price is None:
-            current_price_obj = CurrentPrice.objects.filter(symbol=self.symbol).first()
-            if current_price_obj:
-                self.current_price = current_price_obj.price
-            else:
-                self.current_price = get_current_price(self.symbol)
-                if self.current_price:
-                    CurrentPrice.objects.update_or_create(symbol=self.symbol, defaults={'price': self.current_price})
+            self.current_price = get_current_price_for_symbol(self.symbol)
 
+        super().save(*args, **kwargs)
+
+        if self.transaction_type == 'Buy':
+            Holding.update_quantity(self.portfolio, self.symbol, self.quantity, self.price, self.date)
+        elif self.transaction_type == 'Sell':
+            Holding.update_quantity(self.portfolio, self.symbol, -self.quantity, self.price, self.date)
+        
         self.portfolio.update_performance()
+
 
 class CurrentPrice(models.Model):
     symbol = models.CharField(max_length=10, unique=True)
@@ -116,6 +131,7 @@ class CurrentPrice(models.Model):
 
     def __str__(self):
         return f"{self.symbol}: {self.price}"
+
 
 class MonthlyPerformance(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)

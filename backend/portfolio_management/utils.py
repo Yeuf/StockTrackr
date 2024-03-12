@@ -1,5 +1,6 @@
 import yfinance as yf
 
+
 def get_current_price(symbol):
     try:
         stock = yf.Ticker(symbol)
@@ -8,3 +9,4 @@ def get_current_price(symbol):
     except Exception as e:
         print(f"Error fetching current price for symbol {symbol}: {e}")
         return None
+    

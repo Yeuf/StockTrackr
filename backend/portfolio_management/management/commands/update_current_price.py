@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from portfolio_management.models import Investment, CurrentPrice
+from portfolio_management.models import Investment, CurrentPrice, Holding
 from portfolio_management.utils import get_current_price
 
 class Command(BaseCommand):
@@ -17,6 +17,11 @@ class Command(BaseCommand):
                 for investment in investments:
                     investment.current_price = current_price
                     investment.save()
+                
+                holdings = Holding.objects.filter(symbol=symbol)
+                for holding in holdings:
+                    holding.current_price = current_price
+                    holding.save()
                     
             else:
                 self.stdout.write(self.style.WARNING(f"Failed to update price for {symbol}"))
