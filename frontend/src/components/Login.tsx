@@ -23,19 +23,75 @@ const Login = () => {
                     })){ 
                         navigate('/home')
                     }else {
-                        alert("Error Occoured. Try Again")
+                        alert("Error Occurred. Try Again")
                     }
                 }
             })
     }
 
     return (
-        <form onSubmit={onSubmit}>
-            <input type={"username"} onChange={(e)=>setFormData({...formData, username: e.target.value})}/>
-            <input type={"password"} onChange={(e)=>setFormData({...formData, password: e.target.value})}/>
+        <div className="flex min-h-screen justify-center items-center bg-white">
+            <div className="max-w-md w-full space-y-8 p-8 bg-white shadow-lg rounded-lg">
+                <div>
+                    <img
+                        className="mx-auto h-10 w-auto"
+                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                        alt="Your Company"
+                    />
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+                </div>
+                <form onSubmit={onSubmit} className="space-y-6">
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            Username
+                        </label>
+                        <div className="mt-1">
+                            <input
+                                id="username"
+                                name="username"
+                                type="username"
+                                autoComplete="username"
+                                required
+                                onChange={(e)=>setFormData({...formData, username: e.target.value})}
+                                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
 
-            <button>Submit</button>
-        </form>
+                    <div>
+                        <div className="flex justify-between">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                Password
+                            </label>
+                            <a href="#" className="text-sm text-indigo-600 hover:text-indigo-500">Forgot your password?</a>
+                        </div>
+                        <div className="mt-1">
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autoComplete="current-password"
+                                required
+                                onChange={(e)=>setFormData({...formData, password: e.target.value})}
+                                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Sign in
+                        </button>
+                    </div>
+                </form>
+                {/* <p className="text-center text-sm text-gray-600">
+                    Not a member? <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">Start a 14-day free trial</a>
+                </p> */}
+            </div>
+        </div>
     )
 }
 
