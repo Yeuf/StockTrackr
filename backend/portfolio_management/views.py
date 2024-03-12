@@ -11,7 +11,7 @@ class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
     
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 class InvestmentViewSet(viewsets.ModelViewSet):
     queryset = Investment.objects.all()
     serializer_class = InvestmentSerializer
