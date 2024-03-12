@@ -22,3 +22,10 @@ class InvestmentViewSet(viewsets.ModelViewSet):
         holdings = Holding.objects.filter(portfolio=portfolio)
         serializer = HoldingSerializer(holdings, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def investments_by_portfolio(self, request, pk=None):
+        portfolio = Portfolio.objects.get(pk=pk)
+        investments = Investment.objects.filter(portfolio=portfolio)
+        serializer = InvestmentSerializer(investments, many=True)
+        return Response(serializer.data)

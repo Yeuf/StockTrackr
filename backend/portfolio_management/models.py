@@ -68,6 +68,7 @@ class Investment(models.Model):
     transaction_type = models.CharField(max_length=4, choices=TRANSACTION_CHOICES)
     date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -97,6 +98,15 @@ class Investment(models.Model):
                     quantity_to_sell -= holding.quantity
                     holding.delete()
         
+        if self.current_price is None:
+            current_price_obj = CurrentPrice.objects.filter(symbol=self.symbol).first()
+            if current_price_obj:
+                self.current_price = current_price_obj.price
+            else:
+                self.current_price = get_current_price(self.symbol)
+                if self.current_price:
+                    CurrentPrice.objects.update_or_create(symbol=self.symbol, defaults={'price': self.current_price})
+
         self.portfolio.update_performance()
 
 class CurrentPrice(models.Model):

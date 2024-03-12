@@ -3,32 +3,60 @@ import { Link, useParams } from 'react-router-dom';
 import { getCookie } from '../utils/getCookie';
 import InvestmentForm from './InvestmentForm';
 
+type Holding = {
+  symbol: string;
+  quantity: number;
+  purchase_price: number;
+  current_price: number;
+  performance: number;
+}
+
 type Investment = {
   id: string;
   portfolio_name: string;
-  current_price: number;
-  price_difference_percentage: number;
   portfolio: string;
   symbol: string;
   quantity: number;
   transaction_type: 'Buy' | 'Sell';
   date: string;
   price: number;
+  current_price: number;
 };
 
 function PortfolioDashboard() {
   const { id } = useParams<{ id: string }>();
+  const [holdings, setHoldings] = useState<Holding[]>([]);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
 
   useEffect(() => {
+    fetchHoldings();
     fetchInvestments();
   }, []);
 
-  const fetchInvestments = async () => {
+  const fetchHoldings = async () => {
     try {
       const response = await fetch(`http://localhost:8000/api/portfolio/investments/${id}/holdings_by_portfolio/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getCookie('_auth')}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch holdings');
+      }
+      const data: Holding[] = await response.json();
+      setHoldings(data);
+    } catch (error) {
+      console.error('Error fetching holdings:', error);
+    }
+  };
+
+  const fetchInvestments = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/portfolio/investments/${id}/investments_by_portfolio/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -57,23 +85,18 @@ function PortfolioDashboard() {
     setSelectedSymbol(prevSymbol => (prevSymbol === symbol ? null : symbol));
   };
 
-  const aggregatedInvestments = investments.reduce((acc: any, investment: Investment) => {
-    if (!acc[investment.symbol]) {
-      acc[investment.symbol] = {
+  const aggregatedHoldings = holdings.reduce((acc: any, holding: Holding) => {
+    if (!acc[holding.symbol]) {
+      acc[holding.symbol] = {
         quantity: 0,
-        price: 0,
-        avgweighteddiff: 0,
+        totalValue: 0,
+        performance: 0,
       };
     }
-    if (investment.transaction_type === 'Buy') {
-      acc[investment.symbol].quantity += investment.quantity;
-      acc[investment.symbol].avgweighteddiff += investment.price_difference_percentage * investment.quantity;
-    } else {
-      acc[investment.symbol].quantity -= investment.quantity;
-    }
-    acc[investment.symbol].price = acc[investment.symbol].quantity * investment.current_price;
-    // to refine 
-    acc[investment.symbol].price_avgweighteddiff = acc[investment.symbol].avgweighteddiff / acc[investment.symbol].quantity;
+    acc[holding.symbol].quantity += holding.quantity;
+    acc[holding.symbol].totalValue += holding.quantity * holding.current_price;
+    acc[holding.symbol].performance += (holding.performance * holding.quantity);
+    acc[holding.symbol].wght_performance = acc[holding.symbol].performance / acc[holding.symbol].quantity;
     return acc;
   }, {});
 
@@ -104,20 +127,20 @@ function PortfolioDashboard() {
           <tr>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Symbol</th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Quantity</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Current Total Price</th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Price diff</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {/* Render aggregated investment information */}
-          {Object.keys(aggregatedInvestments).map(symbol => (
+          {Object.keys(aggregatedHoldings).map(symbol => (
             <React.Fragment key={symbol}>
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap text-center">{symbol}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedInvestments[symbol].quantity}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedInvestments[symbol].price}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedInvestments[symbol].price_avgweighteddiff}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].quantity}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].totalValue.toFixed(2)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].wght_performance}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <button onClick={() => handleDetailsClick(symbol)} className="text-indigo-600 hover:underline focus:outline-none">Details</button>
                 </td>
@@ -133,8 +156,6 @@ function PortfolioDashboard() {
                           <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                           <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                           <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                          <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Current Price</th>
-                          <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Price Diff</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
@@ -148,7 +169,6 @@ function PortfolioDashboard() {
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.quantity}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.price}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.current_price}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-center">{investment.price_difference_percentage} %</td>
                             </tr>
                           ))}
                       </tbody>
