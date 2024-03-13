@@ -20,6 +20,10 @@ export const createInvestment = async (investmentData: Omit<InvestmentData, 'id'
       },
       body: JSON.stringify(investmentData),
     });
+    // if (!response.ok) {
+    //   const errorData = await response.json();
+    //   throw new Error(errorData.detail);
+    // }
     const data = await response.json();
     return data;
   } catch (error) {

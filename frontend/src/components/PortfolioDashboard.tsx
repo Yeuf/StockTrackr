@@ -20,7 +20,6 @@ type Investment = {
   transaction_type: 'Buy' | 'Sell';
   date: string;
   price: number;
-  current_price: number;
 };
 
 function PortfolioDashboard() {
@@ -169,7 +168,9 @@ function PortfolioDashboard() {
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.date}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.quantity}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-center">{investment.price}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-center">{investment.current_price}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-center">
+                                {holdings.find(holding => holding.symbol === investment.symbol)?.current_price ?? 'N/A'}
+                              </td>
                             </tr>
                           ))}
                       </tbody>

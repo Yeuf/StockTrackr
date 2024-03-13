@@ -41,7 +41,7 @@ const InvestmentForm: React.FC<InvestmentFormProps> = ({ onCreateSuccess }) => {
       setNewInvestmentTransactionType('Buy');
       setNewInvestmentDate('');
       setNewInvestmentPrice('');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating investment:', error);
     }
   };

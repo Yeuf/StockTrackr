@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from users.models import CustomUser
 from .utils import get_current_price
 import uuid
+import numpy as np
 
 
 def get_current_price_for_symbol(symbol):
@@ -85,8 +86,11 @@ class Holding(models.Model):
 
     def calculate_price_difference_percentage(self):
         if self.purchase_price and self.current_price:
-            total_price = self.quantity * self.purchase_price
-            total_current_price = self.quantity * self.current_price
+            fl_purchase_price = np.float64(self.purchase_price)
+            fl_current_price = np.float64(self.current_price)
+            total_price = self.quantity * fl_purchase_price
+            total_current_price = self.quantity * fl_current_price
+            print(type(total_current_price), type(total_price))
             return ((total_current_price - total_price) / total_price) * 100
         return None
 
@@ -110,7 +114,6 @@ class Investment(models.Model):
     transaction_type = models.CharField(max_length=4, choices=TRANSACTION_CHOICES)
     date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     def save(self, *args, **kwargs):
 
