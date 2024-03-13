@@ -1,4 +1,5 @@
-from django.db import models
+from django.db import models, transaction
+from django.db.models import Sum, F, FloatField
 from django.core.exceptions import ValidationError
 from users.models import CustomUser
 from .utils import get_current_price
@@ -21,17 +22,25 @@ class Portfolio(models.Model):
     performance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     current_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    
+
     def update_performance(self):
-        holdings = self.holding_set.all()
-        total_investment_value = sum(holding.quantity * holding.purchase_price for holding in holdings)
+        total_investment_value = self.holding_set.aggregate(
+            total_investment_value=Sum(F('quantity') * F('purchase_price'), output_field=FloatField())
+        )['total_investment_value'] or 0
+
         if total_investment_value == 0:
             return
 
-        total_performance = sum(holding.quantity * holding.current_price for holding in holdings)
+        total_performance = self.holding_set.aggregate(
+            total_performance=Sum(F('quantity') * F('current_price'), output_field=FloatField())
+        )['total_performance'] or 0
+
         percentage_difference = ((total_performance - total_investment_value) / total_investment_value) * 100
         self.current_value = total_performance
         self.performance = percentage_difference
         self.save()
+
 
 
 class Holding(models.Model):
@@ -45,44 +54,45 @@ class Holding(models.Model):
 
     @classmethod
     def update_quantity(cls, portfolio, symbol, quantity_change, purchase_price=None, purchase_date=None):
-        if quantity_change > 0:
-            # Buying transaction: Update or create holding
-            holding, created = cls.objects.get_or_create(
-                portfolio=portfolio,
-                symbol=symbol,
-                purchase_price=purchase_price,
-                purchase_date=purchase_date,
-                defaults={'quantity': quantity_change}
-            )
-            if not created:
-                holding.quantity += quantity_change
-                holding.save()
-        else:
-            # Selling transaction: Handle quantity update
-            holdings = cls.objects.filter(portfolio=portfolio, symbol=symbol).order_by('purchase_date')
-            total_holding_quantity = sum(holding.quantity for holding in holdings)
-            if total_holding_quantity >= abs(quantity_change):
-                # Sufficient quantity available in holdings for selling
-                quantity_remaining = -quantity_change
-                for holding in holdings:
-                    if quantity_remaining <= 0:
-                        break
-                    if holding.quantity >= quantity_remaining:
-                        holding.quantity -= quantity_remaining
-                        if holding.quantity == 0:
-                            holding.delete()
-                        else:
-                            holding.save()
-                        quantity_remaining = 0
-                    else:
-                        quantity_remaining -= holding.quantity
-                        holding.delete()
-                if quantity_remaining > 0:
-                    # If there is remaining quantity, create or update other holdings
-                    cls.objects.create(portfolio=portfolio, symbol=symbol, quantity=quantity_remaining)
+        with transaction.atomic():
+            if quantity_change > 0:
+                # Buying transaction: Update or create holding
+                holding, created = cls.objects.get_or_create(
+                    portfolio=portfolio,
+                    symbol=symbol,
+                    purchase_price=purchase_price,
+                    purchase_date=purchase_date,
+                    defaults={'quantity': quantity_change}
+                )
+                if not created:
+                    holding.quantity += quantity_change
+                    holding.save()
             else:
-                # Insufficient quantity available in holdings for selling
-                raise ValueError("Insufficient quantity available in holdings for selling")
+                # Selling transaction: Handle quantity update
+                holdings = cls.objects.filter(portfolio=portfolio, symbol=symbol).order_by('purchase_date')
+                total_holding_quantity = sum(holding.quantity for holding in holdings)
+                if total_holding_quantity >= abs(quantity_change):
+                    # Sufficient quantity available in holdings for selling
+                    quantity_remaining = -quantity_change
+                    for holding in holdings:
+                        if quantity_remaining <= 0:
+                            break
+                        if holding.quantity >= quantity_remaining:
+                            holding.quantity -= quantity_remaining
+                            if holding.quantity == 0:
+                                holding.delete()
+                            else:
+                                holding.save()
+                            quantity_remaining = 0
+                        else:
+                            quantity_remaining -= holding.quantity
+                            holding.delete()
+                    if quantity_remaining > 0:
+                        # If there is remaining quantity, create or update other holdings
+                        cls.objects.create(portfolio=portfolio, symbol=symbol, quantity=quantity_remaining)
+                else:
+                    # Insufficient quantity available in holdings for selling
+                    raise ValueError("Insufficient quantity available in holdings for selling")
 
     def calculate_price_difference_percentage(self):
         if self.purchase_price and self.current_price:
@@ -90,7 +100,6 @@ class Holding(models.Model):
             fl_current_price = np.float64(self.current_price)
             total_price = self.quantity * fl_purchase_price
             total_current_price = self.quantity * fl_current_price
-            print(type(total_current_price), type(total_price))
             return ((total_current_price - total_price) / total_price) * 100
         return None
 
