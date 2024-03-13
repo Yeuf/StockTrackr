@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from users.models import CustomUser
 from .utils import get_current_price
 import uuid
@@ -84,8 +85,9 @@ class Holding(models.Model):
 
     def calculate_price_difference_percentage(self):
         if self.purchase_price and self.current_price:
-            price_float = float(self.purchase_price)
-            return ((float(self.current_price) - price_float) / price_float) * 100
+            total_price = self.quantity * self.purchase_price
+            total_current_price = self.quantity * self.current_price
+            return ((total_current_price - total_price) / total_price) * 100
         return None
 
     def save(self, *args, **kwargs):
@@ -93,6 +95,7 @@ class Holding(models.Model):
             self.current_price = get_current_price_for_symbol(self.symbol)
         self.performance = self.calculate_price_difference_percentage()
         super().save(*args, **kwargs)
+        self.portfolio.update_performance()
 
 
 class Investment(models.Model):
@@ -111,16 +114,17 @@ class Investment(models.Model):
 
     def save(self, *args, **kwargs):
 
-        if self.current_price is None:
-            self.current_price = get_current_price_for_symbol(self.symbol)
-
-        super().save(*args, **kwargs)
-
         if self.transaction_type == 'Buy':
             Holding.update_quantity(self.portfolio, self.symbol, self.quantity, self.price, self.date)
         elif self.transaction_type == 'Sell':
-            Holding.update_quantity(self.portfolio, self.symbol, -self.quantity, self.price, self.date)
+            try:
+                Holding.update_quantity(self.portfolio, self.symbol, -self.quantity, self.price, self.date)
+            except ValueError as e:
+                self.full_clean()
+                raise ValidationError({'quantity': [str(e)]})
         
+        super().save(*args, **kwargs)
+
         self.portfolio.update_performance()
 
 

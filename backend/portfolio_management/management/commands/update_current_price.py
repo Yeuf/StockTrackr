@@ -13,11 +13,6 @@ class Command(BaseCommand):
                 CurrentPrice.objects.update_or_create(symbol=symbol, defaults={'price': current_price})
                 self.stdout.write(self.style.SUCCESS(f"Updated price for {symbol}"))
                 
-                investments = Investment.objects.filter(symbol=symbol)
-                for investment in investments:
-                    investment.current_price = current_price
-                    investment.save()
-                
                 holdings = Holding.objects.filter(symbol=symbol)
                 for holding in holdings:
                     holding.current_price = current_price
