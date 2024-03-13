@@ -56,8 +56,7 @@ class Holding(models.Model):
     def update_quantity(cls, portfolio, symbol, quantity_change, purchase_price=None, purchase_date=None):
         with transaction.atomic():
             if quantity_change > 0:
-                # Buying transaction: Update or create holding
-                holding, created = cls.objects.get_or_create(
+                holding, created = cls.objects.update_or_create(
                     portfolio=portfolio,
                     symbol=symbol,
                     purchase_price=purchase_price,
@@ -65,34 +64,31 @@ class Holding(models.Model):
                     defaults={'quantity': quantity_change}
                 )
                 if not created:
-                    holding.quantity += quantity_change
-                    holding.save()
+                    holding.quantity = F('quantity') + quantity_change
+                    holding.save(update_fields=['quantity'])
             else:
-                # Selling transaction: Handle quantity update
                 holdings = cls.objects.filter(portfolio=portfolio, symbol=symbol).order_by('purchase_date')
                 total_holding_quantity = sum(holding.quantity for holding in holdings)
-                if total_holding_quantity >= abs(quantity_change):
-                    # Sufficient quantity available in holdings for selling
-                    quantity_remaining = -quantity_change
-                    for holding in holdings:
-                        if quantity_remaining <= 0:
-                            break
-                        if holding.quantity >= quantity_remaining:
-                            holding.quantity -= quantity_remaining
-                            if holding.quantity == 0:
-                                holding.delete()
-                            else:
-                                holding.save()
-                            quantity_remaining = 0
-                        else:
-                            quantity_remaining -= holding.quantity
-                            holding.delete()
-                    if quantity_remaining > 0:
-                        # If there is remaining quantity, create or update other holdings
-                        cls.objects.create(portfolio=portfolio, symbol=symbol, quantity=quantity_remaining)
-                else:
-                    # Insufficient quantity available in holdings for selling
+                
+                if total_holding_quantity < abs(quantity_change):
                     raise ValueError("Insufficient quantity available in holdings for selling")
+
+                quantity_to_sell = abs(quantity_change)
+            
+                for holding in holdings:
+                    if quantity_to_sell <= 0:
+                        break
+                    if holding.quantity >= quantity_to_sell:
+                        holding.quantity -= quantity_to_sell
+                        if holding.quantity == 0:
+                            holding.delete()
+                        else:
+                            holding.save()
+                        quantity_to_sell = 0
+                    else:
+                        quantity_to_sell -= holding.quantity
+                        holding.delete()
+
 
     def calculate_price_difference_percentage(self):
         if self.purchase_price and self.current_price:
