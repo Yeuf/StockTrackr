@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getCookie } from '../utils/getCookie';
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 type MonthlyPerformance = {
     value: number;
@@ -13,7 +13,7 @@ type MonthlyPerformance = {
 
 function PortfolioGraph() {
     const { id } = useParams<{ id: string }>();
-    const [monthlyperformance, setMonthlyPerformance] = useState<MonthlyPerformance[]>([]);
+    const [monthlyPerformance, setMonthlyPerformance] = useState<MonthlyPerformance[]>([]);
 
     useEffect(() => {
         fetchMonthlyPerformance();
@@ -41,19 +41,19 @@ const fetchMonthlyPerformance = async () => {
     }
   };
   return (
-    <div>
-      <h2>Monthly Performance Graph</h2>
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={monthlyperformance}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="value" stroke="#8884d8" />
-          {/* <Line type="monotone" dataKey="capital_gain" stroke="#82ca9d" /> */}
-          {/* <Line type="monotone" dataKey="performance" stroke="#ffc658" /> */}
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="flex justify-center">
+      <div className="w-full lg:w-4/5 xl:w-3/4">
+        <h2>Monthly Capital Gain Graph</h2>
+        <ResponsiveContainer width="95%" height={400}>
+          <AreaChart data={monthlyPerformance}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Area type="monotone" dataKey="capital_gain" stroke="#8884d8" fill="#8884d8" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
