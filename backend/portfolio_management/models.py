@@ -1,10 +1,10 @@
 from django.db import models, transaction
-from django.db.models import Sum, F, FloatField
+from django.db.models import Sum, F, DecimalField
 from django.core.exceptions import ValidationError
 from users.models import CustomUser
 from .utils import get_current_price
 import uuid
-import numpy as np
+from decimal import Decimal
 
 
 def get_current_price_for_symbol(symbol):
@@ -26,17 +26,17 @@ class Portfolio(models.Model):
 
     def update_performance(self):
         total_investment_value = self.holding_set.aggregate(
-            total_investment_value=Sum(F('quantity') * F('purchase_price'), output_field=FloatField())
-        )['total_investment_value'] or 0
+            total_investment_value=Sum(F('quantity') * F('purchase_price'), output_field=DecimalField())
+        )['total_investment_value'] or Decimal('0')
 
-        if total_investment_value == 0:
+        if total_investment_value == Decimal('0'):
             return
 
         total_performance = self.holding_set.aggregate(
-            total_performance=Sum(F('quantity') * F('current_price'), output_field=FloatField())
-        )['total_performance'] or 0
+            total_performance=Sum(F('quantity') * F('current_price'), output_field=DecimalField())
+        )['total_performance'] or Decimal('0')
 
-        percentage_difference = ((total_performance - total_investment_value) / total_investment_value) * 100
+        percentage_difference = ((total_performance - total_investment_value) / total_investment_value) * Decimal('100')
         self.current_value = total_performance
         self.performance = percentage_difference
         self.save()
@@ -71,7 +71,7 @@ class Holding(models.Model):
                 total_holding_quantity = sum(holding.quantity for holding in holdings)
                 
                 if total_holding_quantity < abs(quantity_change):
-                    raise ValueError("Insufficient quantity available in holdings for selling")
+                    raise ValidationError("Insufficient quantity available in holdings for selling")
 
                 quantity_to_sell = abs(quantity_change)
             
@@ -90,19 +90,19 @@ class Holding(models.Model):
                         holding.delete()
 
 
-    def calculate_price_difference_percentage(self):
+    def calculate_price_difference_percent(self):
         if self.purchase_price and self.current_price:
-            fl_purchase_price = np.float64(self.purchase_price)
-            fl_current_price = np.float64(self.current_price)
-            total_price = self.quantity * fl_purchase_price
-            total_current_price = self.quantity * fl_current_price
-            return ((total_current_price - total_price) / total_price) * 100
+            decimal_purchase_price = Decimal(self.purchase_price)
+            decimal_current_price = Decimal(self.current_price)
+            total_price = self.quantity * decimal_purchase_price
+            total_current_price = self.quantity * decimal_current_price
+            return ((total_current_price - total_price) / total_price) * Decimal('100')
         return None
 
     def save(self, *args, **kwargs):
         if self.current_price is None:
             self.current_price = get_current_price_for_symbol(self.symbol)
-        self.performance = self.calculate_price_difference_percentage()
+        self.performance = self.calculate_price_difference_percent()
         super().save(*args, **kwargs)
         self.portfolio.update_performance()
 

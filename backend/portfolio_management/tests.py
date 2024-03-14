@@ -1,64 +1,131 @@
 from django.test import TestCase
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 from users.models import CustomUser
-from .models import Portfolio, Investment
-from rest_framework.test import APIClient
-from rest_framework import status
-from rest_framework_simplejwt.tokens import AccessToken
-import datetime
+from .models import Portfolio, Holding, Investment, CurrentPrice, MonthlyPerformance
 
-class PortfolioModelTest(TestCase):
+class PortfolioTestCase(TestCase):
     def setUp(self):
-        self.user = CustomUser.objects.create_user(username='test9999', password='12345')
-        self.portfolio = Portfolio.objects.create(user=self.user, name='Test Portfolio')
+        self.user = CustomUser.objects.create_user(username="testuser", password="testpassword")
+        self.portfolio = Portfolio.objects.create(user=self.user, name="Test Portfolio")
 
-    def test_portfolio_creation(self):
-        self.assertEqual(self.portfolio.user, self.user)
-        self.assertEqual(self.portfolio.name, 'Test Portfolio')
+    def test_update_performance(self):
+        self.portfolio.update_performance()
+        self.assertEqual(self.portfolio.performance, 0)
+        self.assertEqual(self.portfolio.current_value, 0)
 
-class InvestmentModelTest(TestCase):
-    def setUp(self):
-        self.user = CustomUser.objects.create_user(username='test9999', password='12345')
-        self.portfolio = Portfolio.objects.create(user=self.user, name='Test Portfolio')
-        self.investment = Investment.objects.create(
-            portfolio=self.portfolio, symbol='AAPL', quantity=10, transaction_type='BUY', 
-            date=datetime.date(2024, 2, 15), price=105.75
+        holding = Holding.objects.create(
+            portfolio=self.portfolio,
+            symbol='AAPL',
+            quantity=10,
+            purchase_price=100,
+            purchase_date=timezone.now().date(),
+            current_price=110
         )
-
-    def test_investment_creation(self):
-        self.assertEqual(self.investment.portfolio, self.portfolio)
-        self.assertEqual(self.investment.symbol, 'AAPL')
-        self.assertEqual(self.investment.quantity, 10)
-        self.assertEqual(self.investment.transaction_type, 'BUY')
-        self.assertEqual(self.investment.date.strftime('%Y-%m-%d'), '2024-02-15')
-        self.assertEqual(self.investment.price, 105.75)
+        self.portfolio.update_performance()
+        self.assertEqual(self.portfolio.performance, 10)
+        self.assertEqual(self.portfolio.current_value, 1100)
 
 
-class PortfolioViewSetTest(TestCase):
+class InvestmentTestCase(TestCase):
     def setUp(self):
-        self.client = APIClient()
-        self.user = CustomUser.objects.create_user(username='test9999', password='12345')
-        self.token = AccessToken.for_user(self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+        self.user = CustomUser.objects.create_user(username="testuser", password="testpassword")
+        self.portfolio = Portfolio.objects.create(user=self.user, name="Test Portfolio")
 
-    def test_portfolio_list_view(self):
-        response = self.client.get('/api/portfolio/portfolios/')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_buy_investment(self):
+        Investment.objects.create(
+            portfolio=self.portfolio,
+            symbol='AAPL',
+            quantity=5,
+            transaction_type='Buy',
+            date=timezone.now().date(),
+            price=110
+        )
+        holding = self.portfolio.holding_set.filter(symbol='AAPL').first()
+        self.assertEqual(holding.quantity, 5)
 
-class InvestmentViewSetTest(TestCase):
+    def test_sell_investment(self):
+        Holding.objects.create(
+            portfolio=self.portfolio,
+            symbol='AAPL',
+            quantity=10,
+            purchase_price=100,
+            purchase_date=timezone.now().date(),
+            current_price=110
+        )
+        Investment.objects.create(
+            portfolio=self.portfolio,
+            symbol='AAPL',
+            quantity=3,
+            transaction_type='Sell',
+            date=timezone.now().date(),
+            price=120
+        )
+        holding = self.portfolio.holding_set.filter(symbol='AAPL').first()
+        self.assertEqual(holding.quantity, 7)
+
+        with self.assertRaises(ValidationError):
+            Investment.objects.create(
+                portfolio=self.portfolio,
+                symbol='AAPL',
+                quantity=8,
+                transaction_type='Sell',
+                date=timezone.now().date(),
+                price=120
+            )
+
+
+class CurrentPriceTestCase(TestCase):
+    def test_current_price_str(self):
+        current_price = CurrentPrice.objects.create(symbol='AAPL', price=110)
+        self.assertEqual(str(current_price), 'AAPL: 110')
+
+class MonthlyPerformanceTestCase(TestCase):
     def setUp(self):
-        self.client = APIClient()
-        self.user = CustomUser.objects.create_user(username='test9999', password='12345')
-        self.token = AccessToken.for_user(self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
-        self.portfolio = Portfolio.objects.create(user=self.user, name='Test Portfolio')
-        self.investment_data = {
-            'portfolio': self.portfolio.id, 'symbol': 'AAPL', 'quantity': 10, 'transaction_type': 'BUY', 
-            'date': '2024-02-15', 'price': 105.75
-        }
+        self.user = CustomUser.objects.create_user(username="testuser", password="testpassword")
+        self.portfolio = Portfolio.objects.create(user=self.user, name="Test Portfolio")
 
-    def test_create_investment(self):
-        response = self.client.post('/api/portfolio/investments/', self.investment_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Investment.objects.count(), 1)
-        self.assertEqual(Investment.objects.get().symbol, 'AAPL')
+    def test_create_monthly_performance(self):
+        MonthlyPerformance.objects.create(
+            portfolio=self.portfolio,
+            value=1000,
+            performance=10,
+            month=1,
+            year=2024
+        )
+        self.assertTrue(MonthlyPerformance.objects.filter(portfolio=self.portfolio, month=1, year=2024).exists())
+
+    def test_unique_together_constraint(self):
+        MonthlyPerformance.objects.create(
+            portfolio=self.portfolio,
+            value=1000,
+            performance=10,
+            month=1,
+            year=2023
+        )
+        with self.assertRaises(Exception):
+            MonthlyPerformance.objects.create(
+                portfolio=self.portfolio,
+                value=1500,
+                performance=15,
+                month=1,
+                year=2023
+            )
+
+    def test_update_monthly_performance(self):
+        MonthlyPerformance.objects.create(
+            portfolio=self.portfolio,
+            value=1000,
+            performance=10,
+            month=1,
+            year=2024
+        )
+        monthly_performance = MonthlyPerformance.objects.get(portfolio=self.portfolio, month=1, year=2024)
+        monthly_performance.value = 1200
+        monthly_performance.performance = 20
+        monthly_performance.save()
+
+        updated_monthly_performance = MonthlyPerformance.objects.get(portfolio=self.portfolio, month=1, year=2024)
+        self.assertEqual(updated_monthly_performance.value, 1200)
+        self.assertEqual(updated_monthly_performance.performance, 20)
 
