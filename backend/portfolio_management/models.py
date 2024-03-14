@@ -5,8 +5,6 @@ from users.models import CustomUser
 from .utils import get_current_price
 import uuid
 from decimal import Decimal
-from datetime import datetime
-
 
 
 def get_current_price_for_symbol(symbol):
