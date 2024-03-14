@@ -21,6 +21,7 @@ class Portfolio(models.Model):
     name = models.CharField(max_length=100)
     performance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     current_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    capital_gain = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     
 
@@ -38,6 +39,7 @@ class Portfolio(models.Model):
 
         percentage_difference = ((total_performance - total_investment_value) / total_investment_value) * Decimal('100')
         self.current_value = total_performance
+        self.capital_gain = total_performance - total_investment_value
         self.performance = percentage_difference
         self.save()
 
@@ -51,6 +53,7 @@ class Holding(models.Model):
     purchase_date = models.DateField()
     current_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     performance = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    capital_gain = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     @classmethod
     def update_quantity(cls, portfolio, symbol, quantity_change, purchase_price=None, purchase_date=None):
@@ -90,19 +93,22 @@ class Holding(models.Model):
                         holding.delete()
 
 
-    def calculate_price_difference_percent(self):
+    def calculate_performance(self):
         if self.purchase_price and self.current_price:
             decimal_purchase_price = Decimal(self.purchase_price)
             decimal_current_price = Decimal(self.current_price)
             total_price = self.quantity * decimal_purchase_price
             total_current_price = self.quantity * decimal_current_price
-            return ((total_current_price - total_price) / total_price) * Decimal('100')
+            capital_gain = total_current_price - total_price
+            performance = ((total_current_price - total_price) / total_price) * Decimal('100')
+            return capital_gain, performance
         return None
+    
 
     def save(self, *args, **kwargs):
         if self.current_price is None:
             self.current_price = get_current_price_for_symbol(self.symbol)
-        self.performance = self.calculate_price_difference_percent()
+        self.capital_gain, self.performance = self.calculate_performance()
         super().save(*args, **kwargs)
         self.portfolio.update_performance()
 

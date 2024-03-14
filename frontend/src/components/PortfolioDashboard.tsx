@@ -9,6 +9,7 @@ type Holding = {
   purchase_price: number;
   current_price: number;
   performance: number;
+  capital_gain: number;
 }
 
 type Investment = {
@@ -90,12 +91,14 @@ function PortfolioDashboard() {
         quantity: 0,
         totalValue: 0,
         performance: 0,
+        capital_gain: 0,
       };
     }
     acc[holding.symbol].quantity += holding.quantity;
     acc[holding.symbol].totalValue += holding.quantity * holding.current_price;
     acc[holding.symbol].performance += (holding.performance * holding.quantity);
     acc[holding.symbol].wght_performance = acc[holding.symbol].performance / acc[holding.symbol].quantity;
+    acc[holding.symbol].capital_gain += +holding.capital_gain;
     return acc;
   }, {});
 
@@ -127,6 +130,7 @@ function PortfolioDashboard() {
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Symbol</th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Quantity</th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Capital Gain</th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
             <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
           </tr>
@@ -139,7 +143,8 @@ function PortfolioDashboard() {
                 <td className="px-6 py-4 whitespace-nowrap text-center">{symbol}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].quantity}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].totalValue.toFixed(2)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].wght_performance}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].capital_gain}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].wght_performance.toFixed(2)} %</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <button onClick={() => handleDetailsClick(symbol)} className="text-indigo-600 hover:underline focus:outline-none">Details</button>
                 </td>

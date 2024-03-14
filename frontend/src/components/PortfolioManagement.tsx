@@ -8,6 +8,7 @@ type Portfolio = {
   name: string;
   current_value: number;
   performance: number;
+  capital_gain: number;
 };
 
 function PortfolioManagement() {
@@ -46,7 +47,7 @@ function PortfolioManagement() {
         alert('Portfolio name cannot be blank. Please enter a valid name.');
         return;
       }
-      const newPortfolio: Omit<Portfolio, 'id' | 'current_value'  | 'performance'> = { name: newPortfolioName };
+      const newPortfolio: Omit<Portfolio, 'id' | 'current_value'  | 'performance' | 'capital_gain'> = { name: newPortfolioName };
       const token: string = getCookie('_auth');
       const data = await createPortfolio(newPortfolio, token);
       setPortfolios([...portfolios, data]);
@@ -111,6 +112,7 @@ function PortfolioManagement() {
           <div className="flex items-center justify-between font-bold">
             <div className="w-1/4 text-center">Portfolio Name</div>
             <div className="w-1/4 text-center">Current Value</div>
+            <div className="w-1/4 text-center">Capital Gain</div>
             <div className="w-1/4 text-center">Performance</div>
             <div className="w-1/2 flex justify-center">Actions</div>
           </div>
@@ -122,6 +124,7 @@ function PortfolioManagement() {
             <Link to={`/portfolio/${portfolio.id}`} className="font-semibold">{portfolio.name}</Link>
           </div>
           <div className="w-1/4 text-center">{portfolio.current_value}</div>
+          <div className="w-1/4 text-center">{portfolio.capital_gain}</div>
           <div className="w-1/4 text-center">{portfolio.performance} %</div>
           <div className="w-1/2 flex justify-center">
             {selectedPortfolioId === portfolio.id ? (

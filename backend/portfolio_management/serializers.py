@@ -4,13 +4,13 @@ from .models import Portfolio, Investment, Holding
 class HoldingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Holding
-        fields = ['symbol', 'quantity', 'purchase_price', 'purchase_date', 'current_price', 'performance']
+        fields = ['symbol', 'quantity', 'purchase_price', 'purchase_date', 'current_price', 'performance', 'capital_gain']
 
 class PortfolioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Portfolio
-        fields = ['id', 'name', 'current_value', 'performance']
+        fields = ['id', 'name', 'current_value', 'performance', 'capital_gain']
         extra_kwargs = {'id': {'read_only': True}}
 
     def create(self, validated_data):
