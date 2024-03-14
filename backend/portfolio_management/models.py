@@ -5,6 +5,8 @@ from users.models import CustomUser
 from .utils import get_current_price
 import uuid
 from decimal import Decimal
+from datetime import datetime
+
 
 
 def get_current_price_for_symbol(symbol):
@@ -23,7 +25,6 @@ class Portfolio(models.Model):
     current_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     capital_gain = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    
 
     def update_performance(self):
         total_investment_value = self.holding_set.aggregate(
@@ -154,9 +155,11 @@ class CurrentPrice(models.Model):
 class MonthlyPerformance(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
     value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    capital_gain = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     performance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     month = models.IntegerField()
     year = models.IntegerField()
 
     class Meta:
         unique_together = ['portfolio', 'month', 'year']
+

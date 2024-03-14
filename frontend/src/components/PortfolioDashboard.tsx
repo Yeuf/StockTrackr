@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getCookie } from '../utils/getCookie';
 import InvestmentForm from './InvestmentForm';
+import PortfolioGraph from './PortfolioGraph';
 
 type Holding = {
   symbol: string;
@@ -112,7 +113,7 @@ function PortfolioDashboard() {
         </button>
       </div>
       {showForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-md shadow-md">
             <InvestmentForm onCreateSuccess={() => { fetchInvestments(); closeForm(); }} />
             <div className="mt-6 flex justify-center">
@@ -123,6 +124,9 @@ function PortfolioDashboard() {
           </div>
         </div>
       )}
+      <div className='relative z-0'> 
+        <PortfolioGraph />
+      </div>
       {/* Render the main table */}
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">

@@ -16,6 +16,7 @@ class Command(BaseCommand):
                 year=current_year
             )
             monthly_performance.value = portfolio.current_value
+            monthly_performance.capital_gain = portfolio.capital_gain
             monthly_performance.performance = portfolio.performance
             monthly_performance.save()
 

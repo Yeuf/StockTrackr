@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Portfolio, Investment, Holding
+from .models import Portfolio, Investment, Holding, MonthlyPerformance
 
 class HoldingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,3 +27,9 @@ class InvestmentSerializer(serializers.ModelSerializer):
         model = Investment
         fields = '__all__'
         extra_kwargs = {'id': {'read_only': True}, 'portfolio': {'write_only': True}}
+
+class MonthlyPerformanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MonthlyPerformance
+        fields = ['id', 'portfolio', 'value', 'capital_gain', 'performance', 'month', 'year']
+        read_only_fields = fields
