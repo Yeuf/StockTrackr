@@ -14,10 +14,20 @@ type MonthlyPerformance = {
 function PortfolioGraph() {
     const { id } = useParams<{ id: string }>();
     const [monthlyPerformance, setMonthlyPerformance] = useState<MonthlyPerformance[]>([]);
+    const [yAxisDomain, setYAxisDomain] = useState<[number, number]>([0, 0]);
 
     useEffect(() => {
         fetchMonthlyPerformance();
     }, []);
+
+    useEffect(() => {
+      if (monthlyPerformance.length > 0) {
+        const min = Math.min(...monthlyPerformance.map(item => item.value));
+        const max = Math.max(...monthlyPerformance.map(item => item.value));
+        const maxYAxisValue = max + 50;
+        setYAxisDomain([min, maxYAxisValue]);
+      }
+    }, [monthlyPerformance]);
 
 
 
@@ -43,14 +53,16 @@ const fetchMonthlyPerformance = async () => {
   return (
     <div className="flex justify-center">
       <div className="w-full lg:w-4/5 xl:w-3/4">
-        <h2>Monthly Capital Gain Graph</h2>
+        <h2 className="mb-4 text-center">Monthly Capital Gain Graph</h2>
         <ResponsiveContainer width="95%" height={400}>
           <AreaChart data={monthlyPerformance}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
+            <YAxis domain={yAxisDomain} />
             <YAxis />
             <Tooltip />
             <Area type="monotone" dataKey="capital_gain" stroke="#8884d8" fill="#8884d8" />
+            <Area type="monotone" dataKey="value" stroke="#7899d4" fill="#7899d4" />
           </AreaChart>
         </ResponsiveContainer>
       </div>

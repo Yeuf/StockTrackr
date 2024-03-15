@@ -2,6 +2,7 @@ import React, {  useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPortfolio, updatePortfolio, deletePortfolio } from '../api/portfolioApi';
 import { getCookie } from '../utils/getCookie';
+import Button from './Button';
 
 type Portfolio = {
   id: string;
@@ -92,6 +93,10 @@ function PortfolioManagement() {
 
   const handleDeletePortfolio = async (portfolioId: string) => {
     try {
+      const confirmed = window.confirm("Are you sure you want to delete this portfolio?");
+    if (!confirmed) {
+      return;
+    }
       const token: string = getCookie('_auth');
       await deletePortfolio(portfolioId, token);
       const updatedPortfolios = portfolios.filter(portfolio => portfolio.id !== portfolioId);
@@ -108,7 +113,7 @@ function PortfolioManagement() {
   {portfolios.map((portfolio, index) => (
     <React.Fragment key={portfolio.id}>
       {index === 0 && (
-        <li className="py-4">
+        <li className="py-2">
           <div className="flex items-center justify-between font-bold">
             <div className="w-1/4 text-center">Portfolio Name</div>
             <div className="w-1/4 text-center">Current Value</div>
@@ -136,21 +141,21 @@ function PortfolioManagement() {
                   placeholder="Enter new name"
                   className="px-2 py-1 border border-gray-300 rounded-md mr-2"
                 />
-                <button onClick={handleUpdatePortfolio} className="px-3 py-1 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                <Button onClick={handleUpdatePortfolio} color="green" className='px-3 py-1'>
                   Confirm
-                </button>
-                <button onClick={handleCancelUpdate} className="px-3 py-1 bg-gray-600 text-white font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                </Button>
+                <Button onClick={handleCancelUpdate} color="gray" className="px-3 py-1">
                   Cancel
-                </button>
+                </Button>
               </div>
             ) : (
               <div>
-                <button onClick={() => handleUpdateButtonClick(portfolio.id)} className="px-2 py-1 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <Button onClick={() => handleUpdateButtonClick(portfolio.id)} color="indigo" className="px-2 py-1">
                   Update
-                </button>
-                <button onClick={() => handleDeletePortfolio(portfolio.id)} className="px-2 py-1 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ml-2">
+                </Button>
+                <Button onClick={() => handleDeletePortfolio(portfolio.id)} color="red" className="px-2 py-1 ml-2">
                   Delete
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -168,9 +173,9 @@ function PortfolioManagement() {
           placeholder="Enter portfolio name"
           className="px-2 py-1 border border-gray-300 rounded-md mr-2"
         />
-        <button onClick={handleCreatePortfolio} className="px-3 py-1 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        <Button onClick={handleCreatePortfolio} color="indigo" className="px-3 py-1">
           Create
-        </button>
+        </Button>
       </div>
     </div>
   );

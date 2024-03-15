@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { getCookie } from '../utils/getCookie';
 import InvestmentForm from './InvestmentForm';
 import PortfolioGraph from './PortfolioGraph';
+import Button from './Button';
 
 type Holding = {
   symbol: string;
@@ -105,21 +106,20 @@ function PortfolioDashboard() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Dashboard for Portfolio ID: {investments.length > 0 ? investments[0].portfolio_name : 'Loading...'}</h2>
-      <Link to="/portfolio" className="text-blue-500 hover:underline">Back to Portfolios</Link>
-      <div className="flex items-center justify-end">
-        <button onClick={openForm} className="px-3 py-1 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ml-4">
-          Add Investment
-        </button>
+      <h2 className="flex justify-center text-2xl font-bold mb-4">Dashboard for Portfolio ID: {investments.length > 0 ? investments[0].portfolio_name : 'Loading...'}</h2>
+      <div className="flex justify-end ml-4 mr-2 mb-4">
+        <Link to="/portfolio" className="px-3 py-1 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ">
+          Back to Portfolios
+        </Link>
       </div>
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-md shadow-md">
             <InvestmentForm onCreateSuccess={() => { fetchInvestments(); closeForm(); }} />
             <div className="mt-6 flex justify-center">
-              <button onClick={closeForm} className="px-3 py-2 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+              <Button onClick={closeForm} color="red" className="px-3 py-2">
                 Close
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -127,7 +127,11 @@ function PortfolioDashboard() {
       <div className='relative z-0'> 
         <PortfolioGraph />
       </div>
-      {/* Render the main table */}
+      <div className="flex items-center justify-end">
+        <Button onClick={openForm} color="indigo" className="px-3 py-1 ml-4 mr-2 mb-2">
+          Add Investment
+        </Button>
+      </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -140,7 +144,6 @@ function PortfolioDashboard() {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {/* Render aggregated investment information */}
           {Object.keys(aggregatedHoldings).map(symbol => (
             <React.Fragment key={symbol}>
               <tr>
@@ -150,10 +153,9 @@ function PortfolioDashboard() {
                 <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].capital_gain}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">{aggregatedHoldings[symbol].wght_performance.toFixed(2)} %</td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
-                  <button onClick={() => handleDetailsClick(symbol)} className="text-indigo-600 hover:underline focus:outline-none">Details</button>
+                  <Button onClick={() => handleDetailsClick(symbol)} color="blue" className="px-3 py-1">Details</Button>
                 </td>
               </tr>
-              {/* Render details table if symbol is selected */}
               {selectedSymbol === symbol && (
                 <tr>
                   <td colSpan={4}>
@@ -168,7 +170,6 @@ function PortfolioDashboard() {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {/* Render investment details for selected symbol */}
                         {investments
                           .filter(investment => investment.symbol === selectedSymbol)
                           .map(investment => (

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { createInvestment } from '../api/investmentApi';
 import { getCookie } from '../utils/getCookie';
+import Button from './Button';
 
 type InvestmentFormProps = {
   onCreateSuccess: () => void;
@@ -13,7 +14,9 @@ const InvestmentForm: React.FC<InvestmentFormProps> = ({ onCreateSuccess }) => {
   const [newInvestmentSymbol, setNewInvestmentSymbol] = useState('');
   const [newInvestmentQuantity, setNewInvestmentQuantity] = useState(0);
   const [newInvestmentTransactionType, setNewInvestmentTransactionType] = useState<'Buy' | 'Sell'>('Buy');
-  const [newInvestmentDate, setNewInvestmentDate] = useState('');
+  const today = new Date();
+  const defaultValue = today.toISOString().split('T')[0];
+  const [newInvestmentDate, setNewInvestmentDate] = useState(defaultValue);
   const [newInvestmentPrice, setNewInvestmentPrice] = useState('');
 
   const handleCreateInvestment = async () => {
@@ -39,7 +42,7 @@ const InvestmentForm: React.FC<InvestmentFormProps> = ({ onCreateSuccess }) => {
       setNewInvestmentSymbol('');
       setNewInvestmentQuantity(0);
       setNewInvestmentTransactionType('Buy');
-      setNewInvestmentDate('');
+      setNewInvestmentDate(defaultValue);
       setNewInvestmentPrice('');
     } catch (error: any) {
       console.error('Error creating investment:', error);
@@ -116,13 +119,14 @@ const InvestmentForm: React.FC<InvestmentFormProps> = ({ onCreateSuccess }) => {
       </div>
 
       <div className="mt-6 flex justify-center">
-        <button
+        <Button
           type="submit"
           onClick={handleCreateInvestment}
-          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          color='indigo'
+          className="px-3 py-2"
         >
           Create
-        </button>
+        </Button>
       </div>
     </form>
   );

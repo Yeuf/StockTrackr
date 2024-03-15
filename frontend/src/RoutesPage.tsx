@@ -14,7 +14,7 @@ const RoutesPage = () => {
           <Route path={'/login' } element={<Login/>}/>
           <Route path={'/home'} element={
             <RequireAuth fallbackPath={'/login'}>
-              <Home/>
+              <PortfolioManagement/>
             </RequireAuth>
           }/>
           <Route path={'/portfolio'} element={
