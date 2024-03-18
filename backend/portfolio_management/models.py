@@ -117,6 +117,11 @@ class Investment(models.Model):
         ('Buy', 'Buy'),
         ('Sell', 'Sell'),
     )
+    CURRENCY_CHOICES = (
+        ('USD', 'USD'),
+        ('EUR', 'EUR'),
+        ('CAD', 'CAD'),
+    )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
     symbol = models.CharField(max_length=10)
@@ -124,6 +129,7 @@ class Investment(models.Model):
     transaction_type = models.CharField(max_length=4, choices=TRANSACTION_CHOICES)
     date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES)
 
     def save(self, *args, **kwargs):
 

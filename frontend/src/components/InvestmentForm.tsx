@@ -18,6 +18,7 @@ const InvestmentForm: React.FC<InvestmentFormProps> = ({ onCreateSuccess }) => {
   const defaultValue = today.toISOString().split('T')[0];
   const [newInvestmentDate, setNewInvestmentDate] = useState(defaultValue);
   const [newInvestmentPrice, setNewInvestmentPrice] = useState('');
+  const [newInvestmentCurrency, setNewInvestmentCurrency] = useState<'EUR' | 'USD' | 'CAD'>('EUR');
 
   const handleCreateInvestment = async () => {
     try {
@@ -37,6 +38,7 @@ const InvestmentForm: React.FC<InvestmentFormProps> = ({ onCreateSuccess }) => {
         date: newInvestmentDate,
         price: newInvestmentPrice,
         portfolio: portfolioId,
+        currency: newInvestmentCurrency
       }, token);
       onCreateSuccess();
       setNewInvestmentSymbol('');
@@ -44,6 +46,7 @@ const InvestmentForm: React.FC<InvestmentFormProps> = ({ onCreateSuccess }) => {
       setNewInvestmentTransactionType('Buy');
       setNewInvestmentDate(defaultValue);
       setNewInvestmentPrice('');
+      setNewInvestmentCurrency('EUR');
     } catch (error: any) {
       console.error('Error creating investment:', error);
     }
@@ -114,6 +117,20 @@ const InvestmentForm: React.FC<InvestmentFormProps> = ({ onCreateSuccess }) => {
               placeholder="Price"
               className="block w-full border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder-text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
             />
+          </div>
+        </div>
+        <div>
+          <label htmlFor="transactionType" className="sr-only">Currency</label>
+          <div className="mt-1 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
+            <select
+              value={newInvestmentCurrency}
+              onChange={(e) => setNewInvestmentCurrency(e.target.value as 'EUR' | 'USD' | 'CAD')}
+              className="block w-full border-0 bg-transparent py-1.5 pl-1 pr-3 text-gray-900 placeholder-text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+            >
+              <option value="EUR">EUR</option>
+              <option value="USD">USD</option>
+              <option value="CAD">CAD</option>
+            </select>
           </div>
         </div>
       </div>

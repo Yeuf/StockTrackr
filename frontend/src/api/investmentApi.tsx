@@ -8,6 +8,7 @@ type InvestmentData = {
   date: string;
   price: string;
   portfolio: string;
+  currency: 'EUR' | 'USD' | 'CAD';
 };
 
 export const createInvestment = async (investmentData: Omit<InvestmentData, 'id'>, token: string) => {

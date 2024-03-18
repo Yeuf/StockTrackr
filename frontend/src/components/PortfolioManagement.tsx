@@ -109,62 +109,59 @@ function PortfolioManagement() {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4 flex items-center justify-center">Portfolios</h2>
-      <ul className="divide-y divide-gray-200">
-  {portfolios.map((portfolio, index) => (
-    <React.Fragment key={portfolio.id}>
-      {index === 0 && (
-        <li className="py-2">
-          <div className="flex items-center justify-between font-bold">
-            <div className="w-1/4 text-center">Portfolio Name</div>
-            <div className="w-1/4 text-center">Current Value</div>
-            <div className="w-1/4 text-center">Capital Gain</div>
-            <div className="w-1/4 text-center">Performance</div>
-            <div className="w-1/2 flex justify-center">Actions</div>
-          </div>
-        </li>
-      )}
-      <li className="py-4">
-        <div className="flex items-center justify-between">
-          <div className="w-1/4 text-center">
-            <Link to={`/portfolio/${portfolio.id}`} className="font-semibold">{portfolio.name}</Link>
-          </div>
-          <div className="w-1/4 text-center">{portfolio.current_value}</div>
-          <div className="w-1/4 text-center">{portfolio.capital_gain}</div>
-          <div className="w-1/4 text-center">{portfolio.performance} %</div>
-          <div className="w-1/2 flex justify-center">
-            {selectedPortfolioId === portfolio.id ? (
-              <div className="flex items-center">
-                <input
-                  type="text"
-                  value={updatePortfolioName}
-                  onChange={(e) => setUpdatePortfolioName(e.target.value)}
-                  placeholder="Enter new name"
-                  className="px-2 py-1 border border-gray-300 rounded-md mr-2"
-                />
-                <Button onClick={handleUpdatePortfolio} color="green" className='px-3 py-1'>
-                  Confirm
-                </Button>
-                <Button onClick={handleCancelUpdate} color="gray" className="px-3 py-1">
-                  Cancel
-                </Button>
-              </div>
-            ) : (
-              <div>
-                <Button onClick={() => handleUpdateButtonClick(portfolio.id)} color="indigo" className="px-2 py-1">
-                  Update
-                </Button>
-                <Button onClick={() => handleDeletePortfolio(portfolio.id)} color="red" className="px-2 py-1 ml-2">
-                  Delete
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      </li>
-    </React.Fragment>
-  ))}
-</ul>
-
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Portfolio Name</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Current Value</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Capital Gain</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Performance</th>
+            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {portfolios.map((portfolio) => (
+            <React.Fragment key={portfolio.id}>
+              <tr>
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  <Link to={`/portfolio/${portfolio.id}`} className="font-semibold">{portfolio.name}</Link>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{portfolio.current_value}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{portfolio.capital_gain}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">{portfolio.performance} %</td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  {selectedPortfolioId === portfolio.id ? (
+                    <div className="flex items-center">
+                      <input
+                        type="text"
+                        value={updatePortfolioName}
+                        onChange={(e) => setUpdatePortfolioName(e.target.value)}
+                        placeholder="Enter new name"
+                        className="px-2 py-1 border border-gray-300 rounded-md mr-2"
+                      />
+                      <Button onClick={handleUpdatePortfolio} color="green" className='px-3 py-1'>
+                        Confirm
+                      </Button>
+                      <Button onClick={handleCancelUpdate} color="gray" className="px-3 py-1">
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Button onClick={() => handleUpdateButtonClick(portfolio.id)} color="indigo" className="px-2 py-1">
+                        Update
+                      </Button>
+                      <Button onClick={() => handleDeletePortfolio(portfolio.id)} color="red" className="px-2 py-1 ml-2">
+                        Delete
+                      </Button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
       <div className="mt-4 flex items-center justify-center">
         <input
           type="text"
