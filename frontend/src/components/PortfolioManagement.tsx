@@ -7,6 +7,7 @@ import {
 } from "../api/portfolioApi";
 import { getCookie } from "../utils/getCookie";
 import Button from "./Button";
+import PortfolioCard from "./PortfolioCard";
 
 type Portfolio = {
   id: string;
@@ -134,45 +135,18 @@ function PortfolioManagement() {
         Portfolios
       </h2>
       <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Portfolio Name
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Current Value
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Capital Gain
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Performance
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {portfolios.map((portfolio) => (
             <React.Fragment key={portfolio.id}>
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
-                  <Link
-                    to={`/portfolio/${portfolio.id}`}
-                    className="font-semibold"
-                  >
-                    {portfolio.name}
-                  </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {portfolio.current_value}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {portfolio.capital_gain}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {portfolio.performance} %
+                <PortfolioCard
+                  id={portfolio.id}
+                  name={portfolio.name}
+                  currentValue={portfolio.current_value}
+                  capitalGain={portfolio.capital_gain}
+                  performance={portfolio.performance}
+                />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   {selectedPortfolioId === portfolio.id ? (
