@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import NavBar from './NavBar';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import NavBar from "./NavBar";
+import { useLocation } from "react-router-dom";
 
 type LayoutProps = {
-    children: React.ReactNode;
+  children: React.ReactNode;
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -11,7 +11,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [showNavBar, setShowNavBar] = useState(true);
 
   useEffect(() => {
-    setShowNavBar(!location.pathname.includes('/login'));
+    setShowNavBar(!location.pathname.includes("/login"));
   }, [location]);
 
   return (

@@ -1,5 +1,5 @@
-import { Disclosure, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Disclosure, Transition } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Logout from "./Logout";
 
 type NavigationItem = {
@@ -9,13 +9,13 @@ type NavigationItem = {
 };
 
 const navigation: NavigationItem[] = [
-  { name: 'Dashboard', href: '/home', current: true },
-  { name: 'Portfolios', href: '/portfolio', current: false },
-  { name: 'Projects', href: '#', current: false },
+  { name: "Dashboard", href: "/home", current: true },
+  { name: "Portfolios", href: "/portfolio", current: false },
+  { name: "Projects", href: "#", current: false },
 ];
 
 function classNames(...classes: (string | boolean)[]) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 const NavBar: React.FC = () => {
@@ -52,10 +52,12 @@ const NavBar: React.FC = () => {
                         key={item.name}
                         href={item.href}
                         className={classNames(
-                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                          'rounded-md px-3 py-2 text-sm font-medium'
+                          item.current
+                            ? "bg-gray-900 text-white"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                          "rounded-md px-3 py-2 text-sm font-medium"
                         )}
-                        aria-current={item.current ? 'page' : undefined}
+                        aria-current={item.current ? "page" : undefined}
                       >
                         {item.name}
                       </a>
