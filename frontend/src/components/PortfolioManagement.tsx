@@ -22,7 +22,6 @@ function PortfolioManagement() {
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(
     null
   );
-  const [updatePortfolioName, setUpdatePortfolioName] = useState<string>("");
 
   useEffect(() => {
     fetchPortfolios();
@@ -70,22 +69,20 @@ function PortfolioManagement() {
     }
   };
 
-
-  const handleUpdatePortfolio = async (portfolioId: string, updatedName: string) => {
+  const handleUpdatePortfolio = async (
+    portfolioId: string,
+    updatedName: string
+  ) => {
     try {
       if (!portfolioId || updatedName.trim() === "") {
         console.error("Error: Portfolio ID or updated name is invalid.");
         alert("Portfolio ID or updated name is invalid. Please try again.");
         return;
       }
-  
+
       const token: string = getCookie("_auth");
-      await updatePortfolio(
-        portfolioId,
-        { name: updatedName },
-        token
-      );
-      
+      await updatePortfolio(portfolioId, { name: updatedName }, token);
+
       const updatedPortfolios = portfolios.map((portfolio) =>
         portfolio.id === portfolioId
           ? { ...portfolio, name: updatedName }
@@ -97,7 +94,6 @@ function PortfolioManagement() {
       console.error("Error updating portfolio name:", error);
     }
   };
-  
 
   const handleDeletePortfolio = async (portfolioId: string) => {
     try {
@@ -129,15 +125,15 @@ function PortfolioManagement() {
             <React.Fragment key={portfolio.id}>
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
-                <PortfolioCard
-                  id={portfolio.id}
-                  name={portfolio.name}
-                  currentValue={portfolio.current_value}
-                  capitalGain={portfolio.capital_gain}
-                  performance={portfolio.performance}
-                  handleUpdatePortfolio={handleUpdatePortfolio}
-                  handleDeletePortfolio={handleDeletePortfolio}
-                />
+                  <PortfolioCard
+                    id={portfolio.id}
+                    name={portfolio.name}
+                    currentValue={portfolio.current_value}
+                    capitalGain={portfolio.capital_gain}
+                    performance={portfolio.performance}
+                    handleUpdatePortfolio={handleUpdatePortfolio}
+                    handleDeletePortfolio={handleDeletePortfolio}
+                  />
                 </td>
               </tr>
             </React.Fragment>
