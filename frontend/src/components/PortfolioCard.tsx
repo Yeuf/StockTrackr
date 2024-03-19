@@ -44,14 +44,11 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
   };
 
   const handleUpdate = async () => {
-    try {
-      await handleUpdatePortfolio(selectedPortfolioId!, updatePortfolioName);
-      setShowOptions(false);
-    } catch (error) {
-      console.error("Error updating portfolio:", error);
-    }
+    handleUpdatePortfolio(id, updatePortfolioName);
+    setShowOptions(false);
   };
-
+  
+  
   const handleCancelUpdate = () => {
     setSelectedPortfolioId(null);
     setUpdatePortfolioName("");
@@ -141,14 +138,13 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
                             type="text"
                             value={updatePortfolioName}
                             onChange={(e) =>{
-                              console.log("Updating portfolio name:", e.target.value);
                               setUpdatePortfolioName(e.target.value);
                             }}
                             placeholder="Enter new name"
                             className="px-2 py-1 border border-gray-300 rounded-md mr-2"
                           />
                           <button
-                            onClick={() => handleUpdatePortfolio(id, updatePortfolioName)}
+                            onClick={handleUpdate}
                             className="px-3 py-1 bg-green-500 text-white rounded-md mr-2"
                           >
                             Confirm

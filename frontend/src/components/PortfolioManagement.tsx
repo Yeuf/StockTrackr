@@ -70,46 +70,34 @@ function PortfolioManagement() {
     }
   };
 
-  const handleUpdateButtonClick = (portfolioId: string) => {
-    setSelectedPortfolioId(portfolioId);
-    setUpdatePortfolioName("");
-  };
 
-  const handleUpdatePortfolio = async () => {
+  const handleUpdatePortfolio = async (portfolioId: string, updatedName: string) => {
     try {
-      console.log("Selected portfolio ID:", selectedPortfolioId);
-    console.log("Updated portfolio name:", updatePortfolioName);
-      if (selectedPortfolioId && updatePortfolioName.trim() === "") {
-        console.error("Error: Update name cannot be blank.");
-        alert("Update name cannot be blank. Please enter a valid name.");
+      if (!portfolioId || updatedName.trim() === "") {
+        console.error("Error: Portfolio ID or updated name is invalid.");
+        alert("Portfolio ID or updated name is invalid. Please try again.");
         return;
       }
-      if (selectedPortfolioId && updatePortfolioName.trim() !== "") {
-        const token: string = getCookie("_auth");
-        await updatePortfolio(
-          selectedPortfolioId,
-          { name: updatePortfolioName },
-          token
-        );
-        const updatedPortfolios = portfolios.map((portfolio) =>
-          portfolio.id === selectedPortfolioId
-            ? { ...portfolio, name: updatePortfolioName }
-            : portfolio
-        );
-        setPortfolios(updatedPortfolios);
-        setSelectedPortfolioId(null);
-      } else {
-        console.error("Error: Update name cannot be blank.");
-      }
+  
+      const token: string = getCookie("_auth");
+      await updatePortfolio(
+        portfolioId,
+        { name: updatedName },
+        token
+      );
+      
+      const updatedPortfolios = portfolios.map((portfolio) =>
+        portfolio.id === portfolioId
+          ? { ...portfolio, name: updatedName }
+          : portfolio
+      );
+      setPortfolios(updatedPortfolios);
+      setSelectedPortfolioId(null);
     } catch (error) {
       console.error("Error updating portfolio name:", error);
     }
   };
-
-  const handleCancelUpdate = () => {
-    setSelectedPortfolioId(null);
-    setUpdatePortfolioName("");
-  };
+  
 
   const handleDeletePortfolio = async (portfolioId: string) => {
     try {
@@ -151,50 +139,6 @@ function PortfolioManagement() {
                   handleDeletePortfolio={handleDeletePortfolio}
                 />
                 </td>
-                {/* <td className="px-6 py-4 whitespace-nowrap text-center">
-                  {selectedPortfolioId === portfolio.id ? (
-                    <div className="flex items-center">
-                      <input
-                        type="text"
-                        value={updatePortfolioName}
-                        onChange={(e) => setUpdatePortfolioName(e.target.value)}
-                        placeholder="Enter new name"
-                        className="px-2 py-1 border border-gray-300 rounded-md mr-2"
-                      />
-                      <Button
-                        onClick={handleUpdatePortfolio}
-                        color="green"
-                        className="px-3 py-1"
-                      >
-                        Confirm
-                      </Button>
-                      <Button
-                        onClick={handleCancelUpdate}
-                        color="gray"
-                        className="px-3 py-1"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Button
-                        onClick={() => handleUpdateButtonClick(portfolio.id)}
-                        color="indigo"
-                        className="px-2 py-1"
-                      >
-                        Update
-                      </Button>
-                      <Button
-                        onClick={() => handleDeletePortfolio(portfolio.id)}
-                        color="red"
-                        className="px-2 py-1 ml-2"
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  )}
-                </td> */}
               </tr>
             </React.Fragment>
           ))}
