@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import {
   createPortfolio,
   updatePortfolio,
@@ -78,6 +77,8 @@ function PortfolioManagement() {
 
   const handleUpdatePortfolio = async () => {
     try {
+      console.log("Selected portfolio ID:", selectedPortfolioId);
+    console.log("Updated portfolio name:", updatePortfolioName);
       if (selectedPortfolioId && updatePortfolioName.trim() === "") {
         console.error("Error: Update name cannot be blank.");
         alert("Update name cannot be blank. Please enter a valid name.");
@@ -131,11 +132,11 @@ function PortfolioManagement() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 flex items-center justify-center">
+      <h2 className="text-2xl font-bold mt-8 mb-4 flex items-center justify-center">
         Portfolios
       </h2>
       <table className="min-w-full divide-y divide-gray-200">
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody>
           {portfolios.map((portfolio) => (
             <React.Fragment key={portfolio.id}>
               <tr>
@@ -146,9 +147,11 @@ function PortfolioManagement() {
                   currentValue={portfolio.current_value}
                   capitalGain={portfolio.capital_gain}
                   performance={portfolio.performance}
+                  handleUpdatePortfolio={handleUpdatePortfolio}
+                  handleDeletePortfolio={handleDeletePortfolio}
                 />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
+                {/* <td className="px-6 py-4 whitespace-nowrap text-center">
                   {selectedPortfolioId === portfolio.id ? (
                     <div className="flex items-center">
                       <input
@@ -191,7 +194,7 @@ function PortfolioManagement() {
                       </Button>
                     </div>
                   )}
-                </td>
+                </td> */}
               </tr>
             </React.Fragment>
           ))}
