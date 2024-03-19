@@ -1,5 +1,6 @@
 from rest_framework import viewsets
-from rest_framework.decorators import action, permission_classes
+from rest_framework.decorators import action, permission_classes, api_view
+from django.core.management import call_command
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Portfolio, Holding, Investment, MonthlyPerformance
@@ -35,3 +36,11 @@ class InvestmentViewSet(viewsets.ModelViewSet):
         monthly_performance = MonthlyPerformance.objects.filter(portfolio=portfolio)
         serializer = MonthlyPerformanceSerializer(monthly_performance, many=True)
         return Response(serializer.data)
+
+@api_view(['POST'])
+def update_current_prices(request):
+    try:
+        call_command('update_current_price') 
+        return Response({'success': True})
+    except Exception as e:
+        return Response({'success': False, 'error': str(e)}, status=500)

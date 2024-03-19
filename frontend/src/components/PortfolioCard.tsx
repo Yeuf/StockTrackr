@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import {
   CurrencyEuroIcon,
   ArrowTrendingUpIcon,
+  ChartPieIcon,
+  EllipsisHorizontalCircleIcon,
 } from "@heroicons/react/24/outline";
 
 type PortfolioCardProps = {
@@ -99,7 +101,7 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
                     </p>
                     <h5 className="mb-0 font-bold">{capitalGain}</h5>
                   </div>
-                  <ArrowTrendingUpIcon className="w-10 h-10 ml-4" />
+                  <ChartPieIcon className="w-10 h-10 ml-4" />
                 </div>
               </div>
               <div className="flex-1">
@@ -123,18 +125,7 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
             onClick={handleModsButtonClick}
             className="flex items-center justify-center bg-gray-100 rounded-full p-2 transition duration-300 focus:outline-none"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-500"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 12a2 2 0 100-4 2 2 0 000 4zM2 10a2 2 0 114 0 2 2 0 01-4 0zm14 0a2 2 0 114 0 2 2 0 01-4 0z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <EllipsisHorizontalCircleIcon className="w-6 h-6" />
           </button>
           {showOptions && (
             <div className="absolute top-0 right-0 mt-10 w-48 bg-white rounded-md shadow-xl z-10">

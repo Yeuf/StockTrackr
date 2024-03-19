@@ -4,6 +4,7 @@ import { getCookie } from "../utils/getCookie";
 import InvestmentForm from "./InvestmentForm";
 import PortfolioGraph from "./PortfolioGraph";
 import Button from "./Button";
+import UpdateCurrentPrice from "./UpdateCurrentPrice";
 
 type Holding = {
   symbol: string;
@@ -154,6 +155,9 @@ function PortfolioDashboard() {
         >
           Add Investment
         </Button>
+      </div>
+      <div className="flex items-center justify-end">
+      <UpdateCurrentPrice />
       </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
