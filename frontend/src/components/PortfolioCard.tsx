@@ -76,43 +76,43 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
             <div className="flex-none w-full max-w-full px-3 flex flex-row items-center">
               <div className="flex-auto">
                 <div>
-                  <p className="mb-2 font-sans font-semibold leading-normal text-sm">
+                  <p className="mb-2 font-sans font-normal leading-normal text-lg">
                     Portfolio Name
                   </p>
-                  <h5 className="mb-0 font-bold">{name}</h5>
+                  <h5 className="mb-0 font-bold italic">{name}</h5>
                 </div>
               </div>
               <div className="flex-1">
                 <div className="flex items-center">
                   <div className="flex flex-col">
-                    <p className="mb-2 font-sans font-semibold leading-normal text-sm">
+                    <p className="mb-2 font-sans font-normal leading-normal text-lg">
                       Current Value
                     </p>
-                    <h5 className="mb-0 font-bold">{currentValue}</h5>
+                    <h5 className="mb-0 font-bold italic">{currentValue}</h5>
                   </div>
-                  <CurrencyEuroIcon className="w-10 h-10 ml-4" />
+                  <CurrencyEuroIcon className="w-8 h-8 ml-4" />
                 </div>
               </div>
               <div className="flex-1">
                 <div className="flex items-center">
                   <div className="flex flex-col">
-                    <p className="mb-2 font-sans font-semibold leading-normal text-sm">
+                    <p className="mb-2 font-sans font-normal leading-normal text-lg">
                       Capital Gain
                     </p>
-                    <h5 className="mb-0 font-bold">{capitalGain}</h5>
+                    <h5 className="mb-0 font-bold italic">{capitalGain}</h5>
                   </div>
-                  <ChartPieIcon className="w-10 h-10 ml-4" />
+                  <ChartPieIcon className="w-8 h-8 ml-4" />
                 </div>
               </div>
               <div className="flex-1">
                 <div className="flex items-center">
                   <div className="flex flex-col">
-                    <p className="mb-0 font-sans font-semibold leading-normal text-sm">
+                    <p className="mb-0 font-sans font-normal leading-normal text-lg">
                       Performance
                     </p>
-                    <h5 className="mb-0 font-bold">{performance} %</h5>
+                    <h5 className="mb-0 font-bold italic">{performance} %</h5>
                   </div>
-                  <ArrowTrendingUpIcon className="w-10 h-10 ml-4" />
+                  <ArrowTrendingUpIcon className="w-8 h-8 ml-4" />
                 </div>
               </div>
             </div>

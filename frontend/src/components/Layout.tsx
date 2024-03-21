@@ -15,9 +15,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [location]);
 
   return (
-    <div>
-      {showNavBar && <NavBar />}
-      {children}
+    <div className="flex h-screen overflow-hidden">
+      <div className={`${showNavBar ? 'lg:w-64' : 'w-0'} lg:flex-shrink-0`}>
+        {showNavBar && <NavBar />}
+      </div>
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {children}
+      </div>
     </div>
   );
 };
