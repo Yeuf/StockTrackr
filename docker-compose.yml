@@ -3,21 +3,28 @@ version: '3'
 services:
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "8000:8000"
     depends_on:
       - db
+    volumes:
+      - ./backend:/backend
+    env_file:
+      - .env
 
   frontend:
     build:
       context: ./frontend
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/frontend
 
   db:
     image: postgres
     environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
