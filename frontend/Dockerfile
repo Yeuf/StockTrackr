@@ -1,5 +1,5 @@
 # Use an official Node runtime as a parent image
-FROM node:14-slim
+FROM node:20.11.0-slim
 
 # Set the working directory in the container
 WORKDIR /frontend
@@ -13,11 +13,15 @@ RUN npm install
 # Copy the current directory contents into the container at /frontend
 COPY . .
 
-# Build the React app
-RUN npm run build
+# Set environment variable to determine build command
+ARG NODE_ENV=development
+ENV NODE_ENV=$NODE_ENV
+
+# Run build command based on environment
+# RUN if [ "$NODE_ENV" = "production" ]; then npm run build; else npm run dev; fi
 
 # Expose the React app port
-EXPOSE 3000
+EXPOSE 5173
 
 # Run the React app
-CMD ["npm", "start"]
+CMD ["npm", "run","dev"]

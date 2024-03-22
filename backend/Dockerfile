@@ -1,8 +1,7 @@
 # Use an official Python runtime as a parent image
 FROM python:3.12-slim
 
-# Install UV
-RUN pip install uv
+ENV VIRTUAL_ENV=/usr/local
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -12,10 +11,9 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /backend
 
 # Copy the requirements file
-COPY ./requirements.txt /backend/
+COPY requirements.txt /backend/
 
-# Install requirements using UV
-RUN uv pip install -r requirements.txt
+RUN pip install uv && uv pip install --no-cache -r requirements.txt
 
 # Copy the current directory contents into the container at /backend
 COPY . /backend/

@@ -3,8 +3,7 @@ version: '3'
 services:
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
     ports:
       - "8000:8000"
     depends_on:
@@ -18,9 +17,11 @@ services:
     build:
       context: ./frontend
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
       - ./frontend:/frontend
+    env_file:
+      - .env
 
   db:
     image: postgres
