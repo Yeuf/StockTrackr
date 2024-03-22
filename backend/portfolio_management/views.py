@@ -8,8 +8,11 @@ from .serializers import PortfolioSerializer, HoldingSerializer, InvestmentSeria
 
 @permission_classes([IsAuthenticated])
 class PortfolioViewSet(viewsets.ModelViewSet):
-    queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
+    basename = 'portfolio'
+    def get_queryset(self):
+        user = self.request.user
+        return Portfolio.objects.filter(user=user)
     
 @permission_classes([IsAuthenticated])
 class InvestmentViewSet(viewsets.ModelViewSet):

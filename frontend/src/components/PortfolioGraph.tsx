@@ -63,7 +63,7 @@ function PortfolioGraph() {
   };
   return (
     <div className="flex justify-center">
-      <div className="w-full lg:w-4/5 xl:w-3/4">
+      <div className="w-full lg:w-11/12 xl:w-5/6 rounded-lg overflow-hidden shadow-lg bg-white border border-gray-200">
         <h2 className="mb-4 text-center">Monthly Capital Gain Graph</h2>
         <ResponsiveContainer width="95%" height={400}>
           <AreaChart data={monthlyPerformance}>
@@ -72,12 +72,12 @@ function PortfolioGraph() {
             <YAxis domain={yAxisDomain} />
             <YAxis />
             <Tooltip />
-            <Area
+            {/* <Area
               type="monotone"
               dataKey="capital_gain"
               stroke="#8884d8"
               fill="#8884d8"
-            />
+            /> */}
             <Area
               type="monotone"
               dataKey="value"

@@ -76,19 +76,19 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
             <div className="flex-none w-full max-w-full px-3 flex flex-row items-center">
               <div className="flex-auto">
                 <div>
-                  <p className="mb-2 font-sans font-normal leading-normal text-lg">
+                  <p className="mb-2 font-sans font-bold leading-normal text-lg">
                     Portfolio Name
                   </p>
-                  <h5 className="mb-0 font-bold italic">{name}</h5>
+                  <h5 className="mb-0 font-normal italic">{name}</h5>
                 </div>
               </div>
               <div className="flex-1">
                 <div className="flex items-center">
                   <div className="flex flex-col">
-                    <p className="mb-2 font-sans font-normal leading-normal text-lg">
+                    <p className="mb-2 font-sans font-bold leading-normal text-lg">
                       Current Value
                     </p>
-                    <h5 className="mb-0 font-bold italic">{currentValue}</h5>
+                    <h5 className="mb-0 font-normal italic">{currentValue}</h5>
                   </div>
                   <CurrencyEuroIcon className="w-8 h-8 ml-4" />
                 </div>
@@ -96,10 +96,10 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
               <div className="flex-1">
                 <div className="flex items-center">
                   <div className="flex flex-col">
-                    <p className="mb-2 font-sans font-normal leading-normal text-lg">
+                    <p className="mb-2 font-sans font-bold leading-normal text-lg">
                       Capital Gain
                     </p>
-                    <h5 className="mb-0 font-bold italic">{capitalGain}</h5>
+                    <h5 className="mb-0 font-normal italic">{capitalGain}</h5>
                   </div>
                   <ChartPieIcon className="w-8 h-8 ml-4" />
                 </div>
@@ -107,10 +107,10 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
               <div className="flex-1">
                 <div className="flex items-center">
                   <div className="flex flex-col">
-                    <p className="mb-0 font-sans font-normal leading-normal text-lg">
+                    <p className="mb-0 font-sans font-bold leading-normal text-lg">
                       Performance
                     </p>
-                    <h5 className="mb-0 font-bold italic">{performance} %</h5>
+                    <h5 className="mb-0 font-normal italic">{performance} %</h5>
                   </div>
                   <ArrowTrendingUpIcon className="w-8 h-8 ml-4" />
                 </div>

@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import PortfolioViewSet, InvestmentViewSet, update_current_prices
 
 router = DefaultRouter()
-router.register(r'portfolios', PortfolioViewSet)
+router.register(r'portfolios', PortfolioViewSet, basename='portfolio')
 router.register(r'investments', InvestmentViewSet)
 
 urlpatterns = [

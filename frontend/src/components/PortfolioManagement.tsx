@@ -116,8 +116,8 @@ function PortfolioManagement() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mt-8 mb-4 flex items-center justify-center">
-        Portfolios
+      <h2 className="text-3xl font-bold mt-8 mb-4 flex items-center justify-center">
+        Manage Portfolios
       </h2>
       <table className="min-w-full divide-y divide-gray-200">
         <tbody>
