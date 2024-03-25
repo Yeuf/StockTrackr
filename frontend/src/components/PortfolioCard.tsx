@@ -69,7 +69,7 @@ const PortfolioCard: React.FC<PortfolioCardProps> = ({
   };
 
   return (
-    <div className="relative flex flex-col min-w-0 mb-6 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border border border-gray-400">
+    <div className="relative flex flex-col min-w-0 mb-6 lg:w-full break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border border border-gray-400">
       <Link to={`/portfolio/${id}`} className="block">
         <div className="flex-auto p-4">
           <div className="flex flex-wrap -mx-3">

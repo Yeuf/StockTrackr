@@ -1,27 +1,31 @@
-import { Bars3Icon } from "@heroicons/react/24/solid";
+import React, { useState } from "react";
+import { Bars3Icon, HomeIcon, BriefcaseIcon, CogIcon, PowerIcon } from "@heroicons/react/24/solid";
 import Logout from "./Logout";
 
 type NavigationItem = {
   name: string;
   href: string;
   current: boolean;
+  icon: JSX.Element;
 };
 
 const navigation: NavigationItem[] = [
-  { name: "Dashboard", href: "/home", current: true },
-  { name: "Portfolios", href: "/portfolio", current: false },
-  { name: "Projects", href: "#", current: false },
+  { name: "Dashboard", href: "/home", current: true, icon: <HomeIcon className="h-5 w-5 mr-2" /> },
+  { name: "Portfolios", href: "/portfolio", current: false, icon: <BriefcaseIcon className="h-5 w-5 mr-2" /> },
+  { name: "Projects", href: "#", current: false, icon: <CogIcon className="h-5 w-5 mr-2" /> },
 ];
 
-function classNames(...classes: (string | boolean)[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 const Sidebar: React.FC = () => {
+  const [reduced, setReduced] = useState(false);
+
+  const toggleReduce = () => {
+    setReduced(!reduced);
+  };
+
   return (
-    <div className="bg-gray-800 h-screen fixed inset-y-0 left-0 w-64">
-      <div className="px-2 py-4">
-        <div className="flex items-center justify-between">
+    <div className={`bg-gray-800 min-h-screen lg:w-60 lg:flex lg:flex-col ${reduced ? 'lg:w-16' : ''}`}>
+      <div className="px-2 py-4 lg:py-6 lg:px-4 flex items-center justify-between">
+      {!reduced && (
           <div className="flex items-center">
             <img
               className="h-8 w-auto"
@@ -29,30 +33,32 @@ const Sidebar: React.FC = () => {
               alt="Your Company"
             />
           </div>
-          <div className="flex items-center">
-            <Bars3Icon className="block h-6 w-6 text-gray-400" aria-hidden="true" />
-          </div>
-        </div>
-        <div className="mt-4">
-          {navigation.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className={classNames(
-                item.current
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                "block px-4 py-2 text-sm font-medium rounded-md"
-              )}
-              aria-current={item.current ? "page" : undefined}
-            >
-              {item.name}
-            </a>
-          ))}
+        )}
+        <div className="flex items-center">
+          <button onClick={toggleReduce} className="text-gray-400 focus:outline-none">
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 w-64 bg-gray-800 py-4 px-2">
+      <div className={`mt-4 lg:mt-8 lg:flex-grow lg:block ${reduced ? 'hidden' : 'block'}`}>
+        {navigation.map((item) => (
+          <a
+            key={item.name}
+            href={item.href}
+            className="block px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md"
+          >
+            {item.icon}
+            {!reduced && item.name}
+          </a>
+        ))}
+      </div>
+      <div className={`lg:absolute lg:bottom-0 lg:left-0 w-full lg:w-auto lg:py-4 lg:px-2 ${reduced ? 'hidden' : 'block'}`}>
         <Logout />
+      </div>
+      <div className={`lg:absolute lg:bottom-0 lg:left-0 w-full lg:w-auto lg:py-4 lg:px-2 ${!reduced ? 'hidden' : 'block'}`}>
+        <a href="/logout" className="flex items-center px-2 py-2 text-sm font-medium text-gray-300 hover:text-white">
+          <PowerIcon className="h-6 w-6 mr-2 text-gray-400" />
+        </a>
       </div>
     </div>
   );

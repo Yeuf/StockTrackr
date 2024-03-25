@@ -97,12 +97,12 @@ function PortfolioDashboard() {
   };
 
   return (
-    <div>
-      <h2 className="flex justify-center text-2xl font-bold mb-4">
+    <div className="container mx-auto lg:w-full">
+      <h2 className="text-center text-2xl font-bold mb-4">
         Dashboard for Portfolio ID:{" "}
         {investments.length > 0 ? investments[0].portfolio_name : "Loading..."}
       </h2>
-      <div className="flex justify-end ml-4 mr-2 mb-4">
+      <div className="flex justify-center mb-4">
         <Link
           to="/portfolio"
           className="px-3 py-1 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -127,35 +127,33 @@ function PortfolioDashboard() {
           </div>
         </div>
       )}
-      <div className="flex justify-between mb-4">
-        <div>
+      <div className="flex flex-col lg:flex-row justify-center mb-4">
+        <div className="w-full lg:w-1/2 mb-4 lg:mb-0">
           <Button
             onClick={openForm}
             color="indigo"
-            className="px-3 py-1 ml-4 mr-2 mb-2"
+            className="w-full lg:w-auto px-3 py-1 mb-2 lg:mb-0 mr-2 lg:mr-4"
           >
             Add Investment
           </Button>
         </div>
-        <div>
+        <div className="w-full lg:w-1/2">
           <UpdateCurrentPrice />
         </div>
       </div>
-      <div className="flex">
-        <div className="w-1/2">
+      <div className="flex flex-col lg:flex-row">
+        <div className="w-full lg:w-1/2 mb-4 lg:mb-0 mr-0 lg:mr-2">
           <div className="relative z-0">
             <PortfolioGraph />
           </div>
         </div>
-        <div className="w-1/2 mr-4">
-          <div>
-            <HoldingsTable
-              holdings={holdings}
-              investments={investments}
-              handleDetailsClick={handleDetailsClick}
-              selectedSymbol={selectedSymbol}
-            />
-          </div>
+        <div className="w-full lg:w-1/2">
+          <HoldingsTable
+            holdings={holdings}
+            investments={investments}
+            handleDetailsClick={handleDetailsClick}
+            selectedSymbol={selectedSymbol}
+          />
         </div>
       </div>
     </div>

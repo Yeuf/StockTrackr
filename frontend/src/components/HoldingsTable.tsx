@@ -54,7 +54,7 @@ const HoldingsTable: React.FC<HoldingsTableProps> = ({
   }, {});
 
   return (
-    <div className="mx-auto max-w-screen-xl px-1">
+    <div className="mx-auto max-w-screen pr-5">
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -110,77 +110,78 @@ const HoldingsTable: React.FC<HoldingsTableProps> = ({
                 </tr>
                 {selectedSymbol === symbol && (
                   <tr>
-                  <td colSpan={6}>
-                    <div className="flex justify-center">
-                      <div className="w-8/10 bg-white rounded-lg shadow-lg overflow-hidden">
-                        <table className="w-full divide-y divide-gray-200 ">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Transaction Type
-                              </th>
-                              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Date
-                              </th>
-                              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Quantity
-                              </th>
-                              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Price
-                              </th>
-                              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Current Price
-                              </th>
-                              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Currency
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {investments
-                              .filter(
-                                (investment) =>
-                                  investment.symbol === selectedSymbol
-                              )
-                              .map((investment) => (
-                                <tr key={investment.id}>
-                                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    {investment.transaction_type}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    {investment.date}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    {investment.quantity}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    {investment.price}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    {holdings.find(
-                                      (holding) =>
-                                        holding.symbol === investment.symbol
-                                    )?.current_price ?? "N/A"}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    {investment.currency}
-                                  </td>
-                                </tr>
-                              ))}
-                          </tbody>
-                        </table>
+                    <td colSpan={6}>
+                      <div className="flex justify-center">
+                        <div className="w-full lg:w-10/12 rounded-lg shadow-lg overflow-hidden">
+                          <table className="w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Transaction Type
+                                </th>
+                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Date
+                                </th>
+                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Quantity
+                                </th>
+                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Price
+                                </th>
+                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Current Price
+                                </th>
+                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Currency
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {investments
+                                .filter(
+                                  (investment) =>
+                                    investment.symbol === selectedSymbol
+                                )
+                                .map((investment) => (
+                                  <tr key={investment.id}>
+                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                      {investment.transaction_type}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                      {investment.date}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                      {investment.quantity}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                      {investment.price}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                      {holdings.find(
+                                        (holding) =>
+                                          holding.symbol === investment.symbol
+                                      )?.current_price ?? "N/A"}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                      {investment.currency}
+                                    </td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-);
+  );
+  
 };
 
 export default HoldingsTable;

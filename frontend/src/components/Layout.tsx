@@ -16,7 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <div className={`${showNavBar ? 'lg:w-64' : 'w-0'} lg:flex-shrink-0`}>
+      <div className={`${showNavBar ? 'lg:w-60' : 'w-0'} lg:flex-shrink-0`}>
         {showNavBar && <NavBar />}
       </div>
       <div className="flex flex-col flex-1 overflow-hidden">
@@ -25,5 +25,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     </div>
   );
 };
+
 
 export default Layout;
