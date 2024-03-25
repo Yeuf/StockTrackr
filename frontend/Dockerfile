@@ -24,4 +24,4 @@ ENV NODE_ENV=$NODE_ENV
 EXPOSE 5173
 
 # Run the React app
-CMD ["npm", "run","dev"]
+CMD ["npm", "run","dev", "--", "--host", "0.0.0.0"]

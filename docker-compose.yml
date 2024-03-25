@@ -5,7 +5,7 @@ services:
     build:
       context: ./backend
     ports:
-      - "8000:8000"
+      - 8000:8000
     depends_on:
       - db
     volumes:
@@ -17,7 +17,7 @@ services:
     build:
       context: ./frontend
     ports:
-      - "5173:5173"
+      - 5173:5173
     volumes:
       - ./frontend:/frontend
     env_file:
