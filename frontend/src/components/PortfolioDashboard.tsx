@@ -98,17 +98,18 @@ function PortfolioDashboard() {
 
   return (
     <div className="container mx-auto lg:w-full">
-      <h2 className="text-center text-2xl font-bold mb-4">
-        Dashboard for Portfolio ID:{" "}
-        {investments.length > 0 ? investments[0].portfolio_name : "Loading..."}
-      </h2>
-      <div className="flex justify-center mb-4">
+      <div className="flex justify-end mb-2 mr-2 mt-2">
         <Link
           to="/portfolio"
-          className="px-3 py-1 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-3 py-1 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mr-2"
         >
           Back to Portfolios
         </Link>
+      </div>
+      <div className="flex justify-end mb-4 mr-4">
+        <Button onClick={openForm} color="indigo" className="px-3 py-1">
+          Add Investment
+        </Button>
       </div>
       {showForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -127,22 +128,8 @@ function PortfolioDashboard() {
           </div>
         </div>
       )}
-      <div className="flex flex-col lg:flex-row justify-center mb-4">
-        <div className="w-full lg:w-1/2 mb-4 lg:mb-0">
-          <Button
-            onClick={openForm}
-            color="indigo"
-            className="w-full lg:w-auto px-3 py-1 mb-2 lg:mb-0 mr-2 lg:mr-4"
-          >
-            Add Investment
-          </Button>
-        </div>
-        <div className="w-full lg:w-1/2">
-          <UpdateCurrentPrice />
-        </div>
-      </div>
       <div className="flex flex-col lg:flex-row">
-        <div className="w-full lg:w-1/2 mb-4 lg:mb-0 mr-0 lg:mr-2">
+        <div className="w-full lg:w-1/2 mb-4 lg:mb-0 mr-0 lg:mr-2 relative">
           <div className="relative z-0">
             <PortfolioGraph />
           </div>
@@ -154,6 +141,11 @@ function PortfolioDashboard() {
             handleDetailsClick={handleDetailsClick}
             selectedSymbol={selectedSymbol}
           />
+          <div className="flex justify-end mt-4">
+            <div className="w-full lg:w-1/2">
+              <UpdateCurrentPrice />
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -81,8 +81,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onReduceChange }) => {
             href={item.href}
             className="block px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white rounded-md"
           >
-            {item.icon}
-            {!reduced && item.name}
+            <div className="flex items-center">
+              {item.icon}
+              {!reduced && item.name}
+            </div>
           </a>
         ))}
       </div>
